@@ -337,11 +337,10 @@ function App() {
       <div className="fixed inset-0 overflow-hidden">
         <div 
           className="absolute inset-0 opacity-30"
-          style={{ transform: `translateY(${scrollY * 0.3}px)` }}
         >
-          <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-gradient-to-r from-blue-500/8 via-cyan-500/6 to-blue-600/8 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-gradient-to-r from-purple-500/8 via-violet-500/6 to-purple-600/8 rounded-full blur-3xl animate-pulse delay-1000"></div>
-          <div className="absolute top-1/2 left-1/2 w-[600px] h-[600px] bg-gradient-to-r from-emerald-500/8 via-green-500/6 to-emerald-600/8 rounded-full blur-3xl animate-pulse delay-2000"></div>
+          <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-gradient-to-r from-blue-500/8 via-cyan-500/6 to-blue-600/8 rounded-full blur-3xl animate-float-bg"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-gradient-to-r from-purple-500/8 via-violet-500/6 to-purple-600/8 rounded-full blur-3xl animate-float-bg" style={{ animationDelay: '5s' }}></div>
+          <div className="absolute top-1/2 left-1/2 w-[600px] h-[600px] bg-gradient-to-r from-emerald-500/8 via-green-500/6 to-emerald-600/8 rounded-full blur-3xl animate-float-bg" style={{ animationDelay: '10s' }}></div>
         </div>
         
         {/* Enhanced Floating Particles */}
@@ -349,7 +348,7 @@ function App() {
           {[...Array(30)].map((_, i) => (
             <div
               key={i}
-              className="absolute w-1 h-1 bg-white/10 rounded-full animate-pulse"
+              className="absolute w-1 h-1 bg-white/15 rounded-full animate-pulse"
               style={{
                 left: `${Math.random() * 100}%`,
                 top: `${Math.random() * 100}%`,
@@ -578,7 +577,7 @@ function App() {
                   onMouseEnter={() => setHoveredElement('button')}
                   onMouseLeave={() => setHoveredElement(null)}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500/15 via-purple-500/10 to-cyan-500/15 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-400/15 via-purple-400/10 to-cyan-400/15 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   <div className="relative flex items-center space-x-3">
                     <Download className="w-7 h-7 group-hover:animate-bounce" />
                     <span>Download for macOS</span>
