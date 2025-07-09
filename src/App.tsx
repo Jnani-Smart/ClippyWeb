@@ -24,10 +24,13 @@ import {
   ExternalLink,
   HelpCircle,
   Scale,
-  GitBranch
+  GitBranch,
+  Menu,
+  X
 } from 'lucide-react';
 
 function App() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeFeature, setActiveFeature] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -453,8 +456,76 @@ function App() {
                 </a>
               </div>
             </nav>
+
+            <div className="md:hidden flex items-center">
+              <button 
+                onClick={() => setIsMenuOpen(!isMenuOpen)} 
+                className="inline-flex items-center justify-center p-2 rounded-md text-white/80 hover:text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+                aria-expanded="false"
+              >
+                <span className="sr-only">Open main menu</span>
+                {isMenuOpen ? (
+                  <X className="block h-6 w-6" aria-hidden="true" />
+                ) : (
+                  <Menu className="block h-6 w-6" aria-hidden="true" />
+                )}
+              </button>
+            </div>
           </div>
         </div>
+
+        {isMenuOpen && (
+          <div className="md:hidden">
+            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+              {[
+                { name: 'Features', href: '#features' },
+                { name: 'Testimonials', href: '#testimonials' },
+                { name: 'Gallery', href: '#gallery' },
+                { name: 'Download', href: '#download' }
+              ].map((item) => (
+                <a 
+                  key={item.name}
+                  href={item.href} 
+                  onClick={() => setIsMenuOpen(false)}
+                  className="block px-3 py-2 rounded-md text-base font-medium text-white/90 hover:text-white hover:bg-white/10"
+                >
+                  {item.name}
+                </a>
+              ))}
+            </div>
+            <div className="pt-4 pb-3 border-t border-white/10">
+              <div className="flex items-center justify-center px-5 space-x-4">
+                <a 
+                  href="https://github.com/Jnani-Smart/Clippy" 
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 rounded-md text-white/70 hover:text-white hover:bg-white/10"
+                  title="View on GitHub"
+                >
+                  <Github className="w-6 h-6" />
+                </a>
+                <a 
+                  href="https://github.com/Jnani-Smart/Clippy/releases" 
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 rounded-md text-white/70 hover:text-white hover:bg-white/10"
+                  title="Releases"
+                >
+                  <GitBranch className="w-6 h-6" />
+                </a>
+                <a 
+                  href="https://github.com/Jnani-Smart/Clippy/issues" 
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 rounded-md text-white/70 hover:text-white hover:bg-white/10"
+                  title="Support"
+                >
+                  <HelpCircle className="w-6 h-6" />
+                </a>
+              </div>
+            </div>
+          </div>
+        )}
       </header>
 
       {/* Hero Section - Redesigned */}
@@ -566,7 +637,7 @@ function App() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-16">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {detailedFeatures.map((feature, index) => (
               <div
                 key={index}
