@@ -312,6 +312,9 @@ html {
   padding-bottom: 0.15em !important; /* Extra bottom padding for descenders like "y" */
   margin-bottom: -0.15em !important; /* Compensate for extra padding */
   letter-spacing: -0.02em; /* Slight letter spacing adjustment */
+  background: none !important; /* Remove any gradients */
+  color: white !important; /* Ensure text is solid white */
+  -webkit-text-fill-color: white !important; /* Safari fix */
 }
 
 /* Advanced Hover Effects */

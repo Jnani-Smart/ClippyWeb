@@ -19,9 +19,6 @@ import {
   Settings,
   Sparkles,
   ArrowRight,
-  Users,
-  TrendingUp,
-  Award,
   Clipboard,
   Github,
   ExternalLink,
@@ -78,11 +75,18 @@ function App() {
         // Convert bytes to MB
         const fileSizeInMB = (macAsset.size / (1024 * 1024)).toFixed(1);
         
+        // Format date as DD/MM/YYYY
+        const publishDate = new Date(data.published_at);
+        const day = String(publishDate.getDate()).padStart(2, '0');
+        const month = String(publishDate.getMonth() + 1).padStart(2, '0');
+        const year = publishDate.getFullYear();
+        const formattedDate = `${day}/${month}/${year}`;
+        
         setReleaseData({
           version: data.tag_name.replace('v', ''),
           downloadUrl: macAsset.browser_download_url,
           fileSize: `${fileSizeInMB} MB`,
-          publishedAt: new Date(data.published_at).toLocaleDateString(),
+          publishedAt: formattedDate,
           isLoading: false,
           error: null
         });
@@ -268,12 +272,7 @@ function App() {
     }
   ];
 
-  const stats = [
-    { number: "50K+", label: "Active Users", icon: Users },
-    { number: "99.9%", label: "Uptime", icon: TrendingUp },
-    { number: "4.9★", label: "App Store Rating", icon: Star },
-    { number: "#1", label: "Productivity App", icon: Award }
-  ];
+  // Stats removed
 
   const getAccentColor = (accent: string) => {
     const colors = {
@@ -372,25 +371,24 @@ function App() {
 
       {/* Premium Header */}
       <header className="relative z-40 backdrop-blur-2xl bg-white/[0.03] border-b border-white/[0.08]">
-        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-4">
+        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-2">
           <div className="flex items-center justify-between">
             <div 
-              className="flex items-center space-x-4 group cursor-pointer"
+              className="flex items-center space-x-2 group cursor-pointer"
               onMouseEnter={() => setHoveredElement('link')}
               onMouseLeave={() => setHoveredElement(null)}
             >
               <div className="relative">
-                <div className="w-12 h-12 bg-gradient-to-br from-white/12 to-white/6 backdrop-blur-2xl border border-white/15 rounded-2xl flex items-center justify-center shadow-xl group-hover:scale-105 transition-all duration-300">
+                <div className="w-14 h-14 flex items-center justify-center group-hover:scale-105 transition-all duration-300">
                   <img 
                     src="/logo.png" 
                     alt="Clippy Logo" 
-                    className="w-8 h-8 group-hover:rotate-6 transition-transform duration-300"
+                    className="w-12 h-12 group-hover:rotate-6 transition-transform duration-300"
                   />
                 </div>
-                <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/20 via-purple-500/15 to-cyan-500/20 rounded-2xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </div>
-              <div>
-                <span className="text-2xl font-black inline-block bg-gradient-to-r from-white via-blue-50 to-purple-50 bg-clip-text text-transparent tracking-tight font-display clippy-text">Clippy</span>
+              <div className="flex items-center h-full">
+                <span className="text-2xl font-black inline-block text-white tracking-tight font-display clippy-text">Clippy</span>
               </div>
             </div>
             
@@ -424,7 +422,7 @@ function App() {
                   onMouseLeave={() => setHoveredElement(null)}
                   title="View on GitHub"
                 >
-                  <Github className="w-5 h-5 text-white/70 group-hover:text-white transition-colors duration-300" />
+                  <Github className="w-6 h-6 text-white/70 group-hover:text-white transition-colors duration-300" />
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/8 to-cyan-500/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </a>
                 
@@ -437,7 +435,7 @@ function App() {
                   onMouseLeave={() => setHoveredElement(null)}
                   title="Releases"
                 >
-                  <GitBranch className="w-5 h-5 text-white/70 group-hover:text-white transition-colors duration-300" />
+                  <GitBranch className="w-6 h-6 text-white/70 group-hover:text-white transition-colors duration-300" />
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/8 to-cyan-500/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </a>
                 
@@ -450,7 +448,7 @@ function App() {
                   onMouseLeave={() => setHoveredElement(null)}
                   title="Support"
                 >
-                  <HelpCircle className="w-5 h-5 text-white/70 group-hover:text-white transition-colors duration-300" />
+                  <HelpCircle className="w-6 h-6 text-white/70 group-hover:text-white transition-colors duration-300" />
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/8 to-cyan-500/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </a>
               </div>
@@ -460,58 +458,49 @@ function App() {
       </header>
 
       {/* Hero Section - Redesigned */}
-      <section ref={heroRef} className="relative z-10 pt-16 pb-24 px-6 sm:px-8 lg:px-12">
+      <section ref={heroRef} className="relative z-10 pt-8 pb-8 px-6 sm:px-8 lg:px-12">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-24">
+          <div className="text-center mb-8">
             <div className={`transition-all duration-1200 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}>
               {/* Hero Icon */}
-              <div className="flex justify-center mb-12">
+              <div className="flex justify-center mb-4">
                 <div 
                   className="relative group cursor-pointer"
                   onMouseEnter={() => setHoveredElement('card')}
                   onMouseLeave={() => setHoveredElement(null)}
                 >
                   <div 
-                    className="w-56 h-56 bg-gradient-to-br from-white/12 to-white/6 backdrop-blur-2xl border border-white/15 rounded-[3rem] flex items-center justify-center shadow-2xl group-hover:scale-105 transition-all duration-500"
+                    className="w-56 h-56 flex items-center justify-center group-hover:scale-105 transition-all duration-500"
                   >
                     <img 
                       src="/logo.png" 
                       alt="Clippy Logo" 
-                      className="w-36 h-36 group-hover:rotate-6 transition-transform duration-500"
+                      className="w-48 h-48 group-hover:rotate-6 transition-transform duration-500"
                     />
-                  </div>
-                  <div className="absolute -inset-4 bg-gradient-to-r from-blue-500/20 via-purple-500/15 to-cyan-500/20 rounded-[3.5rem] blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
-                  
-                  {/* Floating Elements */}
-                  <div className="absolute -top-3 -right-3 w-12 h-12 bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-2xl border border-white/25 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-all duration-300">
-                    <Sparkles className="w-6 h-6 text-white animate-pulse" />
-                  </div>
-                  <div className="absolute -bottom-3 -left-3 w-10 h-10 bg-gradient-to-br from-white/15 to-white/8 backdrop-blur-2xl border border-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-all duration-300">
-                    <Zap className="w-5 h-5 text-yellow-400 animate-pulse delay-500" />
                   </div>
                 </div>
               </div>
               
               {/* Hero Title */}
-              <div className="mb-8">
-                <h1 className="text-5xl md:text-7xl lg:text-8xl font-black mb-4 tracking-tight leading-none font-display">
-                  <span className="inline-block bg-gradient-to-r from-white via-blue-50 to-purple-50 bg-clip-text text-transparent clippy-text">
+              <div className="mb-4">
+                <h1 className="text-5xl md:text-7xl lg:text-8xl font-black mb-2 tracking-tight leading-none font-display">
+                  <span className="inline-block text-white clippy-text">
                     Clippy
                   </span>
                 </h1>
-                <div className="text-lg md:text-xl text-white/50 font-light tracking-wide uppercase mb-6">
+                <div className="text-lg md:text-xl text-white/50 font-light tracking-wide uppercase mb-3">
                   Clipboard Manager Reimagined
                 </div>
               </div>
               
               {/* Hero Description */}
-              <p className="text-xl md:text-2xl lg:text-3xl text-white/80 mb-12 max-w-4xl mx-auto font-light leading-relaxed">
+              <p className="text-xl md:text-2xl lg:text-2xl text-white/80 mb-6 max-w-4xl mx-auto font-light leading-relaxed">
                 The most elegant clipboard manager for macOS with a stunning 
-                <span className="text-white font-medium inline-block bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent"> VisionOS-inspired interface</span>
+                <span className="text-white font-medium inline-block"> VisionOS-inspired interface</span>
               </p>
               
               {/* CTA Buttons */}
-              <div className="flex flex-col sm:flex-row gap-6 justify-center mb-16">
+              <div className="flex flex-col sm:flex-row gap-6 justify-center">
                 <button 
                   className="group relative px-12 py-4 bg-gradient-to-br from-white/15 to-white/8 backdrop-blur-2xl border border-white/20 rounded-2xl font-bold text-lg transition-all duration-400 hover:scale-105 hover:shadow-xl hover:bg-white/20"
                   onMouseEnter={() => setHoveredElement('button')}
@@ -519,9 +508,9 @@ function App() {
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-500/15 via-purple-500/10 to-cyan-500/15 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   <div className="relative flex items-center space-x-3">
-                    <Download className="w-6 h-6 group-hover:animate-bounce" />
+                    <Download className="w-7 h-7 group-hover:animate-bounce" />
                     <span>Download for macOS</span>
-                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                    <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform duration-300" />
                   </div>
                 </button>
                 
@@ -531,39 +520,20 @@ function App() {
                   onMouseLeave={() => setHoveredElement(null)}
                 >
                   <div className="flex items-center space-x-3">
-                    <Play className="w-6 h-6 group-hover:scale-110 transition-transform duration-300" />
+                    <Play className="w-7 h-7 group-hover:scale-110 transition-transform duration-300" />
                     <span>Watch Demo</span>
                   </div>
                 </button>
-              </div>
-
-              {/* Stats Section */}
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 max-w-4xl mx-auto">
-                {stats.map((stat, index) => (
-                  <div 
-                    key={index}
-                    className="group relative p-6 backdrop-blur-2xl bg-gradient-to-br from-white/8 to-white/4 border border-white/10 rounded-2xl transition-all duration-400 hover:scale-105 cursor-pointer"
-                    onMouseEnter={() => setHoveredElement('card')}
-                    onMouseLeave={() => setHoveredElement(null)}
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    <div className="relative z-10 text-center">
-                      <stat.icon className="w-6 h-6 text-white/60 mx-auto mb-3 group-hover:scale-110 transition-transform duration-300" />
-                      <div className="text-2xl font-black text-white mb-1">{stat.number}</div>
-                      <div className="text-white/60 font-medium text-sm">{stat.label}</div>
-                    </div>
-                  </div>
-                ))}
               </div>
             </div>
           </div>
 
           {/* Quick Features Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-24">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             {features.map((feature, index) => (
               <div
                 key={index}
-                className={`group relative p-8 backdrop-blur-2xl bg-gradient-to-br ${feature.gradient} border border-white/12 rounded-2xl transition-all duration-500 hover:scale-105 cursor-pointer ${
+                className={`group relative p-6 backdrop-blur-2xl bg-gradient-to-br ${feature.gradient} border border-white/12 rounded-2xl transition-all duration-500 hover:scale-105 cursor-pointer ${
                   activeFeature === index ? `ring-2 ring-white/30 ${getBorderColor(feature.accent)}` : ''
                 }`}
                 onMouseEnter={() => setHoveredElement('card')}
@@ -571,8 +541,8 @@ function App() {
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-white/8 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <div className="relative z-10">
-                  <div className="w-16 h-16 bg-gradient-to-br from-white/20 to-white/8 backdrop-blur-2xl border border-white/25 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
-                    <feature.icon className="w-8 h-8 text-white" />
+                  <div className="w-20 h-20 bg-gradient-to-br from-white/20 to-white/8 backdrop-blur-2xl border border-white/25 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+                    <feature.icon className="w-10 h-10 text-white" />
                   </div>
                   <h3 className="text-xl font-bold mb-3 text-white">{feature.title}</h3>
                   <p className="text-white/70 text-base leading-relaxed">{feature.description}</p>
@@ -584,22 +554,22 @@ function App() {
       </section>
 
       {/* Detailed Features Section */}
-      <section id="features" className="relative z-10 py-24 px-6 sm:px-8 lg:px-12">
+      <section id="features" className="relative z-10 py-12 px-6 sm:px-8 lg:px-12">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-20">
+          <div className="text-center mb-12">
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-black mb-6 tracking-tight font-display">
-              <span className="inline-block bg-gradient-to-r from-white via-blue-50 to-purple-50 bg-clip-text text-transparent">Powerful Features</span>
+              <span className="inline-block text-white">Powerful Features</span>
             </h2>
             <p className="text-lg md:text-xl text-white/70 max-w-3xl mx-auto font-light leading-relaxed">
               Every detail crafted for the perfect clipboard management experience
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-24">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-12">
             {detailedFeatures.map((feature, index) => (
               <div
                 key={index}
-                className="group relative p-8 backdrop-blur-2xl bg-gradient-to-br from-white/6 to-white/3 border border-white/12 rounded-2xl transition-all duration-500 hover:scale-105 cursor-pointer"
+                className="group relative p-6 backdrop-blur-2xl bg-gradient-to-br from-white/6 to-white/3 border border-white/12 rounded-2xl transition-all duration-500 hover:scale-105 cursor-pointer"
                 onMouseEnter={() => setHoveredElement('card')}
                 onMouseLeave={() => setHoveredElement(null)}
               >
@@ -629,22 +599,22 @@ function App() {
       </section>
 
       {/* Content Types Section */}
-      <section className="relative z-10 py-24 px-6 sm:px-8 lg:px-12">
+      <section className="relative z-10 py-10 px-6 sm:px-8 lg:px-12">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black mb-6 tracking-tight font-display">
-              <span className="inline-block bg-gradient-to-r from-white via-blue-50 to-purple-50 bg-clip-text text-transparent">Handle Any Content</span>
+          <div className="text-center mb-10">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-black mb-4 tracking-tight font-display">
+              <span className="inline-block text-white">Handle Any Content</span>
             </h2>
             <p className="text-lg md:text-xl text-white/70 max-w-3xl mx-auto font-light leading-relaxed">
               Intelligent categorization and management for all clipboard content types
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {contentTypes.map((type, index) => (
               <div 
                 key={index} 
-                className="group relative p-8 backdrop-blur-2xl bg-gradient-to-br from-white/6 to-white/3 border border-white/12 rounded-2xl transition-all duration-500 hover:scale-105 cursor-pointer"
+                className="group relative p-5 backdrop-blur-2xl bg-gradient-to-br from-white/6 to-white/3 border border-white/12 rounded-2xl transition-all duration-500 hover:scale-105 cursor-pointer"
                 onMouseEnter={() => setHoveredElement('card')}
                 onMouseLeave={() => setHoveredElement(null)}
               >
@@ -672,18 +642,18 @@ function App() {
       </section>
 
       {/* Gallery Section */}
-      <section id="gallery" className="relative z-10 py-24 px-6 sm:px-8 lg:px-12">
+      <section id="gallery" className="relative z-10 py-10 px-6 sm:px-8 lg:px-12">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black mb-6 tracking-tight font-display">
-              <span className="inline-block bg-gradient-to-r from-white via-blue-50 to-purple-50 bg-clip-text text-transparent">See It in Action</span>
+          <div className="text-center mb-10">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-black mb-4 tracking-tight font-display">
+              <span className="inline-block text-white">See It in Action</span>
             </h2>
             <p className="text-lg md:text-xl text-white/70 max-w-3xl mx-auto font-light leading-relaxed">
               Experience the beautiful interface and powerful features
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {[
               {
                 title: "Main Interface",
@@ -753,18 +723,18 @@ function App() {
       </section>
 
       {/* Testimonials Section */}
-      <section id="testimonials" className="relative z-10 py-24 px-6 sm:px-8 lg:px-12">
+      <section id="testimonials" className="relative z-10 py-10 px-6 sm:px-8 lg:px-12">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black mb-6 tracking-tight font-display">
-              <span className="inline-block bg-gradient-to-r from-white via-blue-50 to-purple-50 bg-clip-text text-transparent">Loved by Professionals</span>
+          <div className="text-center mb-10">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-black mb-4 tracking-tight font-display">
+              <span className="inline-block text-white">Loved by Professionals</span>
             </h2>
             <p className="text-lg md:text-xl text-white/70 max-w-3xl mx-auto font-light leading-relaxed">
               Join thousands of developers, designers, and creators who trust Clippy
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
             {testimonials.map((testimonial, index) => (
               <div
                 key={index}
@@ -801,12 +771,12 @@ function App() {
       </section>
 
       {/* Download Section */}
-      <section id="download" className="relative z-10 py-24 px-6 sm:px-8 lg:px-12">
+      <section id="download" className="relative z-10 py-10 px-6 sm:px-8 lg:px-12">
         <div className="max-w-5xl mx-auto">
           <div className="relative backdrop-blur-2xl bg-gradient-to-br from-white/12 to-white/6 border border-white/15 rounded-3xl overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-500/8 via-purple-500/6 to-cyan-500/8"></div>
             
-            <div className="relative z-10 p-16 text-center">
+            <div className="relative z-10 p-10 text-center">
               {/* Download Icon */}
               <div className="flex justify-center mb-8">
                 <div className="w-20 h-20 bg-gradient-to-br from-blue-500/20 to-purple-500/20 backdrop-blur-2xl border border-blue-500/30 rounded-2xl flex items-center justify-center">
@@ -814,11 +784,11 @@ function App() {
                 </div>
               </div>
               
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-black mb-6 tracking-tight font-display">
-                <span className="inline-block bg-gradient-to-r from-white via-blue-50 to-purple-50 bg-clip-text text-transparent">Ready to Transform Your Workflow?</span>
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-black mb-4 tracking-tight font-display">
+                <span className="inline-block text-white">Ready to Transform Your Workflow?</span>
               </h2>
               
-              <p className="text-lg md:text-xl text-white/80 mb-8 max-w-3xl mx-auto font-light leading-relaxed">
+              <p className="text-lg md:text-xl text-white/80 mb-6 max-w-3xl mx-auto font-light leading-relaxed">
                 Join thousands of developers and power users who have upgraded their clipboard experience.
               </p>
               
@@ -908,57 +878,16 @@ function App() {
                 </a>
               </div>
               
-              {/* Additional Links */}
-              <div className="flex flex-wrap justify-center gap-6 mb-8">
-                <a
-                  href="https://github.com/Jnani-Smart/Clippy/releases"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group flex items-center space-x-2 text-white/70 hover:text-white transition-colors duration-300"
-                  onMouseEnter={() => setHoveredElement('link')}
-                  onMouseLeave={() => setHoveredElement(null)}
-                >
-                  <GitBranch className="w-4 h-4" />
-                  <span className="text-sm font-medium">Releases</span>
-                </a>
-                
-                <a
-                  href="https://github.com/Jnani-Smart/Clippy/issues"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group flex items-center space-x-2 text-white/70 hover:text-white transition-colors duration-300"
-                  onMouseEnter={() => setHoveredElement('link')}
-                  onMouseLeave={() => setHoveredElement(null)}
-                >
-                  <HelpCircle className="w-4 h-4" />
-                  <span className="text-sm font-medium">Support</span>
-                </a>
-                
-                <a
-                  href="https://github.com/Jnani-Smart/Clippy/blob/main/LICENSE"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group flex items-center space-x-2 text-white/70 hover:text-white transition-colors duration-300"
-                  onMouseEnter={() => setHoveredElement('link')}
-                  onMouseLeave={() => setHoveredElement(null)}
-                >
-                  <Scale className="w-4 h-4" />
-                  <span className="text-sm font-medium">License</span>
-                </a>
-              </div>
+
               
               {/* Trust Indicators */}
               <div className="flex items-center justify-center space-x-8 text-white/70 mb-8">
                 <div className="flex items-center space-x-3">
-                  <Star className="w-5 h-5 text-yellow-400" />
-                  <span className="text-sm font-semibold">macOS 11.0+</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <Shield className="w-5 h-5 text-green-400" />
+                  <Shield className="w-6 h-6 text-green-400" />
                   <span className="text-sm font-semibold">100% Secure</span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <Zap className="w-5 h-5 text-blue-400" />
+                  <Zap className="w-6 h-6 text-blue-400" />
                   <span className="text-sm font-semibold">Instant Setup</span>
                 </div>
               </div>
@@ -966,11 +895,8 @@ function App() {
               {/* Download Note */}
               <div className="flex flex-col items-center justify-center space-y-3">
                 <div className="flex items-center justify-center space-x-2 text-white/60 text-sm">
-                  <HelpCircle className="w-4 h-4" />
+                  <HelpCircle className="w-5 h-5" />
                   <span>Free and open source. No registration required.</span>
-                </div>
-                <div className="flex items-center justify-center space-x-2 text-white/50 text-sm">
-                  <span>Always downloading the latest version ({releaseData.isLoading ? "checking..." : releaseData.version}) automatically from GitHub.</span>
                 </div>
               </div>
             </div>
@@ -979,29 +905,28 @@ function App() {
       </section>
 
       {/* Premium Footer */}
-      <footer className="relative z-10 backdrop-blur-2xl bg-white/6 border-t border-white/12 py-16">
+      <footer className="relative z-10 backdrop-blur-2xl bg-white/6 border-t border-white/12 py-8">
         <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">
-          <div className="flex flex-col lg:flex-row justify-between items-center space-y-8 lg:space-y-0">
+          <div className="flex flex-col lg:flex-row justify-between items-center space-y-6 lg:space-y-0">
             <div 
-              className="flex items-center space-x-4 group cursor-pointer"
+              className="flex items-center space-x-2 group cursor-pointer"
               onMouseEnter={() => setHoveredElement('link')}
               onMouseLeave={() => setHoveredElement(null)}
             >
-              <div className="w-12 h-12 bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-2xl border border-white/25 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-all duration-300">
+              <div className="w-14 h-14 flex items-center justify-center group-hover:scale-110 transition-all duration-300">
                 <img 
                   src="/logo.png" 
                   alt="Clippy Logo" 
-                  className="w-8 h-8 group-hover:rotate-6 transition-transform duration-300"
+                  className="w-12 h-12 group-hover:rotate-6 transition-transform duration-300"
                 />
               </div>
-              <div>
-                <span className="text-2xl font-black inline-block bg-gradient-to-r from-white via-white/95 to-white/90 bg-clip-text text-transparent tracking-tight">Clippy</span>
-                <div className="text-white/60 text-sm font-medium">The Future of Clipboard Management</div>
+              <div className="flex flex-col justify-center">
+                <span className="text-2xl font-black inline-block text-white tracking-tight font-display clippy-text">Clippy</span>
               </div>
             </div>
             
             {/* Footer Links */}
-            <div className="flex flex-wrap items-center justify-center gap-6">
+            <div className="flex flex-wrap items-center justify-center gap-4">
               <a
                 href="https://github.com/Jnani-Smart/Clippy"
                 target="_blank"
@@ -1010,7 +935,7 @@ function App() {
                 onMouseEnter={() => setHoveredElement('link')}
                 onMouseLeave={() => setHoveredElement(null)}
               >
-                <Github className="w-4 h-4" />
+                <Github className="w-5 h-5" />
                 <span className="text-sm font-medium">GitHub</span>
               </a>
               
@@ -1022,7 +947,7 @@ function App() {
                 onMouseEnter={() => setHoveredElement('link')}
                 onMouseLeave={() => setHoveredElement(null)}
               >
-                <GitBranch className="w-4 h-4" />
+                <GitBranch className="w-5 h-5" />
                 <span className="text-sm font-medium">Releases</span>
               </a>
               
@@ -1034,7 +959,7 @@ function App() {
                 onMouseEnter={() => setHoveredElement('link')}
                 onMouseLeave={() => setHoveredElement(null)}
               >
-                <HelpCircle className="w-4 h-4" />
+                <HelpCircle className="w-5 h-5" />
                 <span className="text-sm font-medium">Support</span>
               </a>
               
@@ -1046,7 +971,7 @@ function App() {
                 onMouseEnter={() => setHoveredElement('link')}
                 onMouseLeave={() => setHoveredElement(null)}
               >
-                <Scale className="w-4 h-4" />
+                <Scale className="w-5 h-5" />
                 <span className="text-sm font-medium">License</span>
               </a>
             </div>
