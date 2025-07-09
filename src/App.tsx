@@ -242,7 +242,7 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white overflow-hidden relative font-inter antialiased">
+    <div className="min-h-screen w-screen bg-black text-white font-inter antialiased overflow-y-auto overflow-x-hidden">
       {/* Advanced Adaptive Cursor */}
       <div 
         className={`fixed pointer-events-none z-50 transition-all duration-300 ease-out ${
@@ -328,8 +328,7 @@ function App() {
                 <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/20 via-purple-500/15 to-cyan-500/20 rounded-2xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </div>
               <div>
-                <span className="text-2xl font-bold bg-gradient-to-r from-white via-white/95 to-white/90 bg-clip-text text-transparent tracking-tight">Clippy</span>
-                <div className="text-xs text-white/60 font-medium tracking-wide">Clipboard Manager</div>
+                <span className="text-2xl font-black inline-block bg-gradient-to-r from-white via-blue-50 to-purple-50 bg-clip-text text-transparent tracking-tight font-display clippy-text">Clippy</span>
               </div>
             </div>
             
@@ -434,7 +433,7 @@ function App() {
               {/* Hero Title */}
               <div className="mb-8">
                 <h1 className="text-5xl md:text-7xl lg:text-8xl font-black mb-4 tracking-tight leading-none font-display">
-                  <span className="bg-gradient-to-r from-white via-blue-50 to-purple-50 bg-clip-text text-transparent">
+                  <span className="inline-block bg-gradient-to-r from-white via-blue-50 to-purple-50 bg-clip-text text-transparent clippy-text">
                     Clippy
                   </span>
                 </h1>
@@ -446,7 +445,7 @@ function App() {
               {/* Hero Description */}
               <p className="text-xl md:text-2xl lg:text-3xl text-white/80 mb-12 max-w-4xl mx-auto font-light leading-relaxed">
                 The most elegant clipboard manager for macOS with a stunning 
-                <span className="text-white font-medium bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent"> VisionOS-inspired interface</span>
+                <span className="text-white font-medium inline-block bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent"> VisionOS-inspired interface</span>
               </p>
               
               {/* CTA Buttons */}
@@ -526,8 +525,8 @@ function App() {
       <section id="features" className="relative z-10 py-24 px-6 sm:px-8 lg:px-12">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black mb-6 bg-gradient-to-r from-white via-blue-50 to-purple-50 bg-clip-text text-transparent tracking-tight font-display">
-              Powerful Features
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black mb-6 tracking-tight font-display">
+              <span className="inline-block bg-gradient-to-r from-white via-blue-50 to-purple-50 bg-clip-text text-transparent">Powerful Features</span>
             </h2>
             <p className="text-lg md:text-xl text-white/70 max-w-3xl mx-auto font-light leading-relaxed">
               Every detail crafted for the perfect clipboard management experience
@@ -571,8 +570,8 @@ function App() {
       <section className="relative z-10 py-24 px-6 sm:px-8 lg:px-12">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black mb-6 bg-gradient-to-r from-white via-blue-50 to-purple-50 bg-clip-text text-transparent tracking-tight font-display">
-              Handle Any Content
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black mb-6 tracking-tight font-display">
+              <span className="inline-block bg-gradient-to-r from-white via-blue-50 to-purple-50 bg-clip-text text-transparent">Handle Any Content</span>
             </h2>
             <p className="text-lg md:text-xl text-white/70 max-w-3xl mx-auto font-light leading-relaxed">
               Intelligent categorization and management for all clipboard content types
@@ -614,8 +613,8 @@ function App() {
       <section id="gallery" className="relative z-10 py-24 px-6 sm:px-8 lg:px-12">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black mb-6 bg-gradient-to-r from-white via-blue-50 to-purple-50 bg-clip-text text-transparent tracking-tight font-display">
-              See It in Action
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black mb-6 tracking-tight font-display">
+              <span className="inline-block bg-gradient-to-r from-white via-blue-50 to-purple-50 bg-clip-text text-transparent">See It in Action</span>
             </h2>
             <p className="text-lg md:text-xl text-white/70 max-w-3xl mx-auto font-light leading-relaxed">
               Experience the beautiful interface and powerful features
@@ -695,8 +694,8 @@ function App() {
       <section id="testimonials" className="relative z-10 py-24 px-6 sm:px-8 lg:px-12">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black mb-6 bg-gradient-to-r from-white via-blue-50 to-purple-50 bg-clip-text text-transparent tracking-tight font-display">
-              Loved by Professionals
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black mb-6 tracking-tight font-display">
+              <span className="inline-block bg-gradient-to-r from-white via-blue-50 to-purple-50 bg-clip-text text-transparent">Loved by Professionals</span>
             </h2>
             <p className="text-lg md:text-xl text-white/70 max-w-3xl mx-auto font-light leading-relaxed">
               Join thousands of developers, designers, and creators who trust Clippy
@@ -753,8 +752,8 @@ function App() {
                 </div>
               </div>
               
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-black mb-6 bg-gradient-to-r from-white via-blue-50 to-purple-50 bg-clip-text text-transparent tracking-tight font-display">
-                Ready to Transform Your Workflow?
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-black mb-6 tracking-tight font-display">
+                <span className="inline-block bg-gradient-to-r from-white via-blue-50 to-purple-50 bg-clip-text text-transparent">Ready to Transform Your Workflow?</span>
               </h2>
               
               <p className="text-lg md:text-xl text-white/80 mb-8 max-w-3xl mx-auto font-light leading-relaxed">
@@ -898,7 +897,7 @@ function App() {
                 />
               </div>
               <div>
-                <span className="text-2xl font-black bg-gradient-to-r from-white via-white/95 to-white/90 bg-clip-text text-transparent tracking-tight">Clippy</span>
+                <span className="text-2xl font-black inline-block bg-gradient-to-r from-white via-white/95 to-white/90 bg-clip-text text-transparent tracking-tight">Clippy</span>
                 <div className="text-white/60 text-sm font-medium">The Future of Clipboard Management</div>
               </div>
             </div>

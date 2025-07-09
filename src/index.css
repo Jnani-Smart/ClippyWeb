@@ -8,17 +8,44 @@
 
 /* Enhanced Typography System */
 @layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
   html {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+    background-color: #000; /* Match app background */
   }
   
   body {
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11', 'ss01';
     font-variant-numeric: oldstyle-nums;
+    width: 100%;
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    position: relative;
+  }
+  
+  #root {
+    width: 100%;
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
+    position: relative;
   }
 }
 
@@ -28,11 +55,51 @@
 }
 
 .font-display {
-  font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif !important;
 }
 
 .font-mono {
   font-family: 'JetBrains Mono', 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+}
+
+/* Full Viewport Coverage */
+.h-screen {
+  min-height: 100vh;
+  min-height: 100dvh; /* Dynamic viewport height for mobile */
+}
+
+.w-screen {
+  width: 100vw;
+  width: 100dvw; /* Dynamic viewport width */
+  max-width: 100%; /* Prevent horizontal overflow */
+}
+
+/* Safe area handling for mobile devices */
+@supports(padding: max(0px)) {
+  .safe-area-inset-top {
+    padding-top: max(env(safe-area-inset-top), 0px);
+  }
+  
+  .safe-area-inset-bottom {
+    padding-bottom: max(env(safe-area-inset-bottom), 0px);
+  }
+  
+  .safe-area-inset-left {
+    padding-left: max(env(safe-area-inset-left), 0px);
+  }
+  
+  .safe-area-inset-right {
+    padding-right: max(env(safe-area-inset-right), 0px);
+  }
+}
+
+/* Prevent any unwanted margins or borders */
+.no-gaps {
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  outline: none !important;
+  overflow: visible !important;
 }
 
 /* Enhanced Cursor System */
@@ -55,25 +122,32 @@ a, button, [role="button"], input, textarea, select {
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
+  background-color: #000; /* Black background */
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.2);
+  background: #000000; /* Black background */
   border-radius: 8px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.2));
+  background: rgba(30, 30, 30, 0.8); /* Very dark gray, almost black */
   border-radius: 8px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(40, 40, 40, 0.5);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.3));
+  background: rgba(50, 50, 50, 0.9); /* Slightly lighter on hover */
 }
 
 ::-webkit-scrollbar-corner {
-  background: rgba(0, 0, 0, 0.2);
+  background: #000000;
+}
+
+/* For Firefox */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: #333 #000;
 }
 
 /* Enhanced Glass Morphism */
@@ -219,6 +293,25 @@ a, button, [role="button"], input, textarea, select {
   border-radius: inherit;
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask-composite: exclude;
+}
+
+/* Fix for gradient text cut-off */
+.bg-clip-text {
+  -webkit-background-clip: text;
+  background-clip: text;
+  padding: 0.05em 0.15em; /* Increased horizontal padding to prevent y cut-off */
+  margin: -0.05em -0.15em; /* Compensate for the padding */
+  display: inline-block;
+  width: auto;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+/* Special handling for Clippy text in hero section */
+.clippy-text {
+  padding-bottom: 0.15em !important; /* Extra bottom padding for descenders like "y" */
+  margin-bottom: -0.15em !important; /* Compensate for extra padding */
+  letter-spacing: -0.02em; /* Slight letter spacing adjustment */
 }
 
 /* Advanced Hover Effects */
