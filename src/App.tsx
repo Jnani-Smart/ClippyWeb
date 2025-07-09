@@ -371,7 +371,7 @@ function App() {
 
       {/* Premium Header */}
       <header className="relative z-40 backdrop-blur-2xl bg-white/[0.03] border-b border-white/[0.08]">
-        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-2">
+        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-4">
           <div className="flex items-center justify-between">
             <div 
               className="flex items-center space-x-2 group cursor-pointer"
@@ -392,7 +392,7 @@ function App() {
               </div>
             </div>
             
-            <nav className="hidden md:flex items-center space-x-2">
+            <nav className="hidden md:flex items-center space-x-1">
               {[
                 { name: 'Features', href: '#features' },
                 { name: 'Testimonials', href: '#testimonials' },
@@ -458,9 +458,9 @@ function App() {
       </header>
 
       {/* Hero Section - Redesigned */}
-      <section ref={heroRef} className="relative z-10 pt-8 pb-8 px-6 sm:px-8 lg:px-12">
+      <section ref={heroRef} className="relative z-10 pt-16 pb-16 px-6 sm:px-8 lg:px-12">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-8">
+          <div className="text-center mb-12">
             <div className={`transition-all duration-1200 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}>
               {/* Hero Icon */}
               <div className="flex justify-center mb-4">
@@ -470,12 +470,12 @@ function App() {
                   onMouseLeave={() => setHoveredElement(null)}
                 >
                   <div 
-                    className="w-56 h-56 flex items-center justify-center group-hover:scale-105 transition-all duration-500"
+                    className="w-64 h-64 flex items-center justify-center group-hover:scale-105 transition-all duration-500"
                   >
                     <img 
                       src="/logo.png" 
                       alt="Clippy Logo" 
-                      className="w-48 h-48 group-hover:rotate-6 transition-transform duration-500"
+                      className="w-56 h-56 group-hover:rotate-6 transition-transform duration-500"
                     />
                   </div>
                 </div>
@@ -488,7 +488,7 @@ function App() {
                     Clippy
                   </span>
                 </h1>
-                <div className="text-lg md:text-xl text-white/50 font-light tracking-wide uppercase mb-3">
+                <div className="text-lg md:text-xl text-white/50 font-light tracking-wide uppercase mt-2 mb-3">
                   Clipboard Manager Reimagined
                 </div>
               </div>
@@ -500,8 +500,9 @@ function App() {
               </p>
               
               {/* CTA Buttons */}
-              <div className="flex flex-col sm:flex-row gap-6 justify-center">
-                <button 
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <a 
+                  href="#download"
                   className="group relative px-12 py-4 bg-gradient-to-br from-white/15 to-white/8 backdrop-blur-2xl border border-white/20 rounded-2xl font-bold text-lg transition-all duration-400 hover:scale-105 hover:shadow-xl hover:bg-white/20"
                   onMouseEnter={() => setHoveredElement('button')}
                   onMouseLeave={() => setHoveredElement(null)}
@@ -512,7 +513,7 @@ function App() {
                     <span>Download for macOS</span>
                     <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform duration-300" />
                   </div>
-                </button>
+                </a>
                 
                 <button 
                   className="group px-12 py-4 backdrop-blur-2xl bg-white/8 border border-white/15 rounded-2xl font-bold text-lg transition-all duration-400 hover:bg-white/12 hover:scale-105"
@@ -529,7 +530,7 @@ function App() {
           </div>
 
           {/* Quick Features Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
             {features.map((feature, index) => (
               <div
                 key={index}
@@ -541,8 +542,8 @@ function App() {
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-white/8 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <div className="relative z-10">
-                  <div className="w-20 h-20 bg-gradient-to-br from-white/20 to-white/8 backdrop-blur-2xl border border-white/25 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
-                    <feature.icon className="w-10 h-10 text-white" />
+                  <div className="w-16 h-16 bg-gradient-to-br from-white/20 to-white/8 backdrop-blur-2xl border border-white/25 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+                    <feature.icon className="w-8 h-8 text-white" />
                   </div>
                   <h3 className="text-xl font-bold mb-3 text-white">{feature.title}</h3>
                   <p className="text-white/70 text-base leading-relaxed">{feature.description}</p>
@@ -554,9 +555,9 @@ function App() {
       </section>
 
       {/* Detailed Features Section */}
-      <section id="features" className="relative z-10 py-12 px-6 sm:px-8 lg:px-12">
+      <section id="features" className="relative z-10 py-16 px-6 sm:px-8 lg:px-12">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
+          <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-black mb-6 tracking-tight font-display">
               <span className="inline-block text-white">Powerful Features</span>
             </h2>
@@ -565,7 +566,7 @@ function App() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-12">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-16">
             {detailedFeatures.map((feature, index) => (
               <div
                 key={index}
@@ -599,9 +600,9 @@ function App() {
       </section>
 
       {/* Content Types Section */}
-      <section className="relative z-10 py-10 px-6 sm:px-8 lg:px-12">
+      <section className="relative z-10 py-16 px-6 sm:px-8 lg:px-12">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-10">
+          <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-black mb-4 tracking-tight font-display">
               <span className="inline-block text-white">Handle Any Content</span>
             </h2>
@@ -610,11 +611,11 @@ function App() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {contentTypes.map((type, index) => (
               <div 
                 key={index} 
-                className="group relative p-5 backdrop-blur-2xl bg-gradient-to-br from-white/6 to-white/3 border border-white/12 rounded-2xl transition-all duration-500 hover:scale-105 cursor-pointer"
+                className="group relative p-6 backdrop-blur-2xl bg-gradient-to-br from-white/6 to-white/3 border border-white/12 rounded-2xl transition-all duration-500 hover:scale-105 cursor-pointer"
                 onMouseEnter={() => setHoveredElement('card')}
                 onMouseLeave={() => setHoveredElement(null)}
               >
@@ -642,9 +643,9 @@ function App() {
       </section>
 
       {/* Gallery Section */}
-      <section id="gallery" className="relative z-10 py-10 px-6 sm:px-8 lg:px-12">
+      <section id="gallery" className="relative z-10 py-16 px-6 sm:px-8 lg:px-12">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-10">
+          <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-black mb-4 tracking-tight font-display">
               <span className="inline-block text-white">See It in Action</span>
             </h2>
@@ -653,7 +654,7 @@ function App() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               {
                 title: "Main Interface",
@@ -723,9 +724,9 @@ function App() {
       </section>
 
       {/* Testimonials Section */}
-      <section id="testimonials" className="relative z-10 py-10 px-6 sm:px-8 lg:px-12">
+      <section id="testimonials" className="relative z-10 py-16 px-6 sm:px-8 lg:px-12">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-10">
+          <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-black mb-4 tracking-tight font-display">
               <span className="inline-block text-white">Loved by Professionals</span>
             </h2>
@@ -734,11 +735,11 @@ function App() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {testimonials.map((testimonial, index) => (
               <div
                 key={index}
-                className="group relative p-8 backdrop-blur-2xl bg-gradient-to-br from-white/8 to-white/4 border border-white/15 rounded-2xl transition-all duration-500 hover:scale-105 cursor-pointer"
+                className="group relative p-6 backdrop-blur-2xl bg-gradient-to-br from-white/8 to-white/4 border border-white/15 rounded-2xl transition-all duration-500 hover:scale-105 cursor-pointer"
                 onMouseEnter={() => setHoveredElement('card')}
                 onMouseLeave={() => setHoveredElement(null)}
               >
@@ -771,16 +772,16 @@ function App() {
       </section>
 
       {/* Download Section */}
-      <section id="download" className="relative z-10 py-10 px-6 sm:px-8 lg:px-12">
+      <section id="download" className="relative z-10 py-16 px-6 sm:px-8 lg:px-12">
         <div className="max-w-5xl mx-auto">
           <div className="relative backdrop-blur-2xl bg-gradient-to-br from-white/12 to-white/6 border border-white/15 rounded-3xl overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-500/8 via-purple-500/6 to-cyan-500/8"></div>
             
-            <div className="relative z-10 p-10 text-center">
+            <div className="relative z-10 p-12 text-center">
               {/* Download Icon */}
-              <div className="flex justify-center mb-8">
-                <div className="w-20 h-20 bg-gradient-to-br from-blue-500/20 to-purple-500/20 backdrop-blur-2xl border border-blue-500/30 rounded-2xl flex items-center justify-center">
-                  <Download className="w-10 h-10 text-white" />
+              <div className="flex justify-center mb-6">
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-500/20 to-purple-500/20 backdrop-blur-2xl border border-blue-500/30 rounded-2xl flex items-center justify-center">
+                  <Download className="w-8 h-8 text-white" />
                 </div>
               </div>
               
@@ -800,7 +801,7 @@ function App() {
               )}
               
               {/* Version Info */}
-              <div className="flex justify-center mb-12">
+              <div className="flex justify-center mb-8">
                 <div className="flex items-center gap-8 p-6 backdrop-blur-2xl bg-white/8 border border-white/15 rounded-2xl">
                   <div className="text-center">
                     <div className="text-white/60 text-sm font-medium mb-1">Version</div>
@@ -840,7 +841,7 @@ function App() {
               </div>
               
               {/* Download Actions */}
-              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
                 <a
                   href={releaseData.downloadUrl}
                   target="_blank"
@@ -883,11 +884,11 @@ function App() {
               {/* Trust Indicators */}
               <div className="flex items-center justify-center space-x-8 text-white/70 mb-8">
                 <div className="flex items-center space-x-3">
-                  <Shield className="w-6 h-6 text-green-400" />
+                  <Shield className="w-5 h-5 text-green-400" />
                   <span className="text-sm font-semibold">100% Secure</span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <Zap className="w-6 h-6 text-blue-400" />
+                  <Zap className="w-5 h-5 text-blue-400" />
                   <span className="text-sm font-semibold">Instant Setup</span>
                 </div>
               </div>
@@ -905,7 +906,7 @@ function App() {
       </section>
 
       {/* Premium Footer */}
-      <footer className="relative z-10 backdrop-blur-2xl bg-white/6 border-t border-white/12 py-8">
+      <footer className="relative z-10 backdrop-blur-2xl bg-white/6 border-t border-white/12 py-12">
         <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">
           <div className="flex flex-col lg:flex-row justify-between items-center space-y-6 lg:space-y-0">
             <div 
@@ -926,7 +927,7 @@ function App() {
             </div>
             
             {/* Footer Links */}
-            <div className="flex flex-wrap items-center justify-center gap-4">
+            <div className="flex flex-wrap items-center justify-center gap-6">
               <a
                 href="https://github.com/Jnani-Smart/Clippy"
                 target="_blank"
@@ -977,10 +978,10 @@ function App() {
             </div>
             
             <div className="text-center lg:text-right">
-              <div className="text-white/70 text-base font-light mb-1">
+              <div className="text-white/70 text-sm font-light mb-1">
                 © 2025 Jnani Smart. All rights reserved.
               </div>
-              <div className="text-white/50 text-sm">
+              <div className="text-white/50 text-xs">
                 Open source under MIT License
               </div>
             </div>
