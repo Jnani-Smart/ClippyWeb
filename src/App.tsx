@@ -9,6 +9,7 @@ import {
   Zap, 
   Download, 
   Star,
+  Loader,
   Play,
   Image,
   FileText,
@@ -36,6 +37,67 @@ function App() {
   const [hoveredElement, setHoveredElement] = useState<string | null>(null);
   const [scrollY, setScrollY] = useState(0);
   const heroRef = useRef<HTMLDivElement>(null);
+  const [releaseData, setReleaseData] = useState<{
+    version: string;
+    downloadUrl: string;
+    fileSize: string;
+    publishedAt: string;
+    isLoading: boolean;
+    error: string | null;
+  }>({
+    version: "1.6.0", // Default fallback version
+    downloadUrl: "https://github.com/Jnani-Smart/Clippy/releases/latest",
+    fileSize: "8.2 MB", // Default fallback size
+    publishedAt: "",
+    isLoading: true,
+    error: null
+  });
+
+  // Fetch latest release data from GitHub
+  useEffect(() => {
+    const fetchLatestRelease = async () => {
+      try {
+        const response = await fetch('https://api.github.com/repos/Jnani-Smart/Clippy/releases/latest');
+        
+        if (!response.ok) {
+          throw new Error(`GitHub API error: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        // Find the macOS asset (assuming it has "mac" or "dmg" in the name)
+        const macAsset = data.assets.find((asset: any) => 
+          asset.name.toLowerCase().includes('mac') || 
+          asset.name.toLowerCase().includes('dmg')
+        );
+        
+        if (!macAsset) {
+          throw new Error('No macOS download found');
+        }
+        
+        // Convert bytes to MB
+        const fileSizeInMB = (macAsset.size / (1024 * 1024)).toFixed(1);
+        
+        setReleaseData({
+          version: data.tag_name.replace('v', ''),
+          downloadUrl: macAsset.browser_download_url,
+          fileSize: `${fileSizeInMB} MB`,
+          publishedAt: new Date(data.published_at).toLocaleDateString(),
+          isLoading: false,
+          error: null
+        });
+      } catch (error) {
+        console.error('Failed to fetch release data:', error);
+        setReleaseData(prev => ({
+          ...prev,
+          isLoading: false,
+          error: error instanceof Error ? error.message : 'Unknown error'
+        }));
+      }
+    };
+    
+    fetchLatestRelease();
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -760,30 +822,57 @@ function App() {
                 Join thousands of developers and power users who have upgraded their clipboard experience.
               </p>
               
+              {releaseData.error && (
+                <div className="mb-8 p-4 bg-red-500/20 border border-red-500/30 rounded-lg text-white">
+                  <p className="font-medium">Could not fetch the latest release. Using default download link.</p>
+                  <p className="text-sm text-white/80 mt-1">{releaseData.error}</p>
+                </div>
+              )}
+              
               {/* Version Info */}
               <div className="flex justify-center mb-12">
                 <div className="flex items-center gap-8 p-6 backdrop-blur-2xl bg-white/8 border border-white/15 rounded-2xl">
                   <div className="text-center">
                     <div className="text-white/60 text-sm font-medium mb-1">Version</div>
-                    <div className="text-white font-bold text-lg">1.6.0</div>
+                    <div className="text-white font-bold text-lg flex items-center justify-center">
+                      {releaseData.isLoading ? (
+                        <div className="flex items-center space-x-2">
+                          <Loader className="w-4 h-4 animate-spin" />
+                          <span className="text-white/70 text-sm">Loading...</span>
+                        </div>
+                      ) : (
+                        releaseData.version
+                      )}
+                    </div>
                   </div>
                   <div className="w-px h-8 bg-white/20"></div>
                   <div className="text-center">
                     <div className="text-white/60 text-sm font-medium mb-1">Size</div>
-                    <div className="text-white font-bold text-lg">8.2 MB</div>
+                    <div className="text-white font-bold text-lg">
+                      {releaseData.isLoading ? "—" : releaseData.fileSize}
+                    </div>
                   </div>
                   <div className="w-px h-8 bg-white/20"></div>
                   <div className="text-center">
                     <div className="text-white/60 text-sm font-medium mb-1">Requires</div>
                     <div className="text-white font-bold text-lg">macOS 11.0+</div>
                   </div>
+                  {releaseData.publishedAt && (
+                    <>
+                      <div className="w-px h-8 bg-white/20"></div>
+                      <div className="text-center">
+                        <div className="text-white/60 text-sm font-medium mb-1">Released</div>
+                        <div className="text-white font-bold text-lg">{releaseData.publishedAt}</div>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
               
               {/* Download Actions */}
               <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
                 <a
-                  href="https://github.com/Jnani-Smart/Clippy/releases/latest"
+                  href={releaseData.downloadUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="group relative px-8 py-4 bg-gradient-to-br from-blue-500/80 to-purple-500/80 backdrop-blur-2xl border border-blue-500/60 rounded-2xl font-bold text-lg transition-all duration-400 hover:scale-105 hover:shadow-xl text-white"
@@ -792,8 +881,12 @@ function App() {
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 via-purple-400/15 to-cyan-400/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   <div className="relative flex items-center space-x-3">
-                    <Download className="w-6 h-6 group-hover:animate-bounce" />
-                    <span>Download for macOS</span>
+                    {releaseData.isLoading ? (
+                      <Loader className="w-6 h-6 animate-spin" />
+                    ) : (
+                      <Download className="w-6 h-6 group-hover:animate-bounce" />
+                    )}
+                    <span>{releaseData.isLoading ? "Fetching latest release..." : "Download for macOS"}</span>
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
                   </div>
                 </a>
@@ -871,9 +964,14 @@ function App() {
               </div>
               
               {/* Download Note */}
-              <div className="flex items-center justify-center space-x-2 text-white/60 text-sm">
-                <HelpCircle className="w-4 h-4" />
-                <span>Free and open source. No registration required.</span>
+              <div className="flex flex-col items-center justify-center space-y-3">
+                <div className="flex items-center justify-center space-x-2 text-white/60 text-sm">
+                  <HelpCircle className="w-4 h-4" />
+                  <span>Free and open source. No registration required.</span>
+                </div>
+                <div className="flex items-center justify-center space-x-2 text-white/50 text-sm">
+                  <span>Always downloading the latest version ({releaseData.isLoading ? "checking..." : releaseData.version}) automatically from GitHub.</span>
+                </div>
               </div>
             </div>
           </div>
