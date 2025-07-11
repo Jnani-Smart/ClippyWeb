@@ -253,25 +253,25 @@ function App() {
 
   const testimonials = [
     {
-      name: "Sarah Chen",
+      name: "Saran Kathiravan",
       role: "Senior Developer at Apple",
       content: "Clippy has revolutionized my development workflow. The VisionOS-inspired interface is absolutely stunning.",
       rating: 5,
-      avatar: "SC"
+      avatar: "SK"
     },
     {
-      name: "Marcus Rodriguez",
+      name: "Khyathi Jain",
       role: "Design Lead at Figma",
       content: "The attention to detail in Clippy's interface is incredible. It feels like a native Apple application.",
       rating: 5,
-      avatar: "MR"
+      avatar: "KJ"
     },
     {
-      name: "Emily Watson",
+      name: "Srikar K",
       role: "Product Manager at Stripe",
       content: "I can't imagine working without Clippy now. It's become an essential part of my daily workflow.",
       rating: 5,
-      avatar: "EW"
+      avatar: "SR"
     }
   ];
 
@@ -656,8 +656,6 @@ function App() {
                         <span className={`text-sm font-bold ${getAccentColor(feature.accent)}`}>
                           {feature.highlight}
                         </span>
-                        <div className="w-1 h-1 bg-white/30 rounded-full"></div>
-                        <span className="text-white/60 text-sm font-medium">{feature.stats}</span>
                       </div>
                     </div>
                   </div>
@@ -700,9 +698,6 @@ function App() {
                   <div className="space-y-2">
                     <div className={`inline-block px-3 py-1 rounded-xl text-xs font-bold ${getAccentColor(type.color)} bg-white/8 border border-white/15`}>
                       {type.stats}
-                    </div>
-                    <div className="text-white/50 text-xs font-medium">
-                      {type.usage} of users
                     </div>
                   </div>
                 </div>
@@ -773,7 +768,7 @@ function App() {
                 
                 {/* Image Placeholder */}
                 <div className="relative h-48 bg-gradient-to-br from-blue-500/20 via-purple-500/15 to-cyan-500/20 flex items-center justify-center">
-                  <item.icon className="w-16 h-16 text-white/60" />
+                  <item.icon className="w-16 h-16 text-white" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
                 </div>
                 
@@ -831,7 +826,6 @@ function App() {
                     </div>
                     <div>
                       <div className="text-white font-bold text-base">{testimonial.name}</div>
-                      <div className="text-white/60 text-sm">{testimonial.role}</div>
                     </div>
                   </div>
                 </div>
@@ -874,7 +868,6 @@ function App() {
               <div className="flex justify-center mb-8">
                 <div className="flex items-center gap-8 p-6 backdrop-blur-2xl bg-white/8 border border-white/15 rounded-2xl">
                   <div className="text-center">
-                    <div className="text-white/60 text-sm font-medium mb-1">Version</div>
                     <div className="text-white font-bold text-lg flex items-center justify-center">
                       {releaseData.isLoading ? (
                         <div className="flex items-center space-x-2">
@@ -888,21 +881,18 @@ function App() {
                   </div>
                   <div className="w-px h-8 bg-white/20"></div>
                   <div className="text-center">
-                    <div className="text-white/60 text-sm font-medium mb-1">Size</div>
                     <div className="text-white font-bold text-lg">
                       {releaseData.isLoading ? "—" : releaseData.fileSize}
                     </div>
                   </div>
                   <div className="w-px h-8 bg-white/20"></div>
                   <div className="text-center">
-                    <div className="text-white/60 text-sm font-medium mb-1">Requires</div>
                     <div className="text-white font-bold text-lg">macOS 11.0+</div>
                   </div>
                   {releaseData.publishedAt && (
                     <>
                       <div className="w-px h-8 bg-white/20"></div>
                       <div className="text-center">
-                        <div className="text-white/60 text-sm font-medium mb-1">Released</div>
                         <div className="text-white font-bold text-lg">{releaseData.publishedAt}</div>
                       </div>
                     </>
@@ -965,7 +955,7 @@ function App() {
               
               {/* Download Note */}
               <div className="flex flex-col items-center justify-center space-y-3">
-                <div className="flex items-center justify-center space-x-2 text-white/60 text-sm">
+                <div className="flex items-center justify-center space-x-2 text-white">
                   <HelpCircle className="w-5 h-5" />
                   <span>Free and open source. No registration required.</span>
                 </div>
