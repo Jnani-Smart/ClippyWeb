@@ -36,6 +36,7 @@ function App() {
   const [hoveredElement, setHoveredElement] = useState<string | null>(null);
   const [scrollY, setScrollY] = useState(0);
   const [activeCarouselIndex, setActiveCarouselIndex] = useState(1); // Start with middle image
+  const [isCarouselPaused, setIsCarouselPaused] = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
   const [releaseData, setReleaseData] = useState<{
     version: string;
@@ -117,7 +118,9 @@ function App() {
 
     // Carousel auto-scroll
     const carouselInterval = setInterval(() => {
-      setActiveCarouselIndex((prev) => (prev + 1) % 4);
+      if (!isCarouselPaused) {
+        setActiveCarouselIndex((prev) => (prev + 1) % 4);
+      }
     }, 4000);
 
     const handleMouseMove = (e: MouseEvent) => {
@@ -139,6 +142,17 @@ function App() {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
+
+  // Handle manual image selection with auto-pause
+  const handleImageSelect = (index: number) => {
+    setActiveCarouselIndex(index);
+    setIsCarouselPaused(true);
+    
+    // Resume auto-scrolling after 30 seconds
+    setTimeout(() => {
+      setIsCarouselPaused(false);
+    }, 30000);
+  };
 
   const features = [
     {
@@ -737,6 +751,7 @@ function App() {
                     className={`
                       relative backdrop-blur-2xl bg-gradient-to-br from-white/10 to-white/5 
                       border border-white/20 rounded-3xl overflow-hidden transition-all duration-700 ease-in-out
+                      cursor-pointer
                       ${isCenter 
                         ? 'scale-110 z-20 shadow-xl shadow-black/30' 
                         : 'scale-90 opacity-70 hover:opacity-90 hover:scale-95'
@@ -746,6 +761,7 @@ function App() {
                       animation: `float ${4 + index * 0.3}s ease-in-out infinite alternate`,
                       animationDelay: `${index * 0.15}s`
                     }}
+                    onClick={() => handleImageSelect(index)}
                   >
                     {/* Image */}
                     <div className="relative">
@@ -776,21 +792,23 @@ function App() {
             </div>
 
             {/* Auto-scroll indicators */}
-            <div className="flex justify-center space-x-3 mt-12 mb-6">
+            <div className="flex justify-center space-x-3 mt-12 mb-6 static">
               {[1, 2, 3, 4].map((_, index) => (
                 <div
                   key={index}
                   className={`
-                    w-3 h-3 rounded-full transition-all duration-500 ease-in-out cursor-pointer
+                    w-3 h-3 rounded-full transition-colors duration-300 ease-in-out cursor-pointer
                     ${index === activeCarouselIndex 
                       ? 'bg-white/90 backdrop-blur-xl border border-white/40 shadow-lg shadow-white/20' 
                       : 'bg-gray-600/80 border border-gray-500/50 backdrop-blur-sm hover:bg-gray-500/80'
                     }
                   `}
-                  onClick={() => setActiveCarouselIndex(index)}
+                  style={{ transform: 'none' }}
+                  onClick={() => handleImageSelect(index)}
                 />
               ))}
             </div>
+            
           </div>
         </div>
       </section>
