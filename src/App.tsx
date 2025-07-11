@@ -176,11 +176,11 @@ function App() {
     },
     {
       icon: Eye,
-      title: "Source Tracking",
-      description: "Automatically track which application generated each clipboard item for better organization and workflow optimization.",
-      highlight: "Smart Origins",
+      title: "Universal Clipboard",
+      description: "Seamlessly sync clipboard items across all your Apple devices with the same iCloud account. Copy on your iPhone, paste on your Mac.",
+      highlight: "Cross-Device",
       accent: "purple",
-      stats: "100+ Apps Supported"
+      stats: "iCloud Sync"
     },
     {
       icon: Moon,
@@ -220,7 +220,7 @@ function App() {
     { 
       icon: FileText, 
       title: "Rich Text", 
-      description: "Plain text, formatted content, and rich media with full styling preservation",
+      description: "Plain text, formatted content, and rich media with full styling preservation across devices",
       color: "emerald",
       stats: "Perfect Formatting",
       usage: "85%"
@@ -228,7 +228,7 @@ function App() {
     { 
       icon: Code, 
       title: "Code Snippets", 
-      description: "Syntax highlighting for 200+ languages with intelligent code detection",
+      description: "Syntax highlighting for 200+ programming languages with intelligent code detection",
       color: "purple",
       stats: "200+ Languages",
       usage: "65%"
@@ -236,7 +236,7 @@ function App() {
     { 
       icon: Link, 
       title: "Smart URLs", 
-      description: "Automatic link previews, metadata extraction, and bookmark management",
+      description: "Automatic link previews, metadata extraction, and intelligent bookmark management",
       color: "blue",
       stats: "Auto Preview",
       usage: "78%"
@@ -244,7 +244,7 @@ function App() {
     { 
       icon: Image, 
       title: "Visual Content", 
-      description: "Screenshots, images, and visual assets with thumbnail generation",
+      description: "Screenshots, images, and visual assets with automatic thumbnail generation and preview",
       color: "orange",
       stats: "Any Format",
       usage: "45%"
@@ -683,19 +683,19 @@ function App() {
             {contentTypes.map((type, index) => (
               <div 
                 key={index} 
-                className="group relative p-6 backdrop-blur-2xl bg-gradient-to-br from-white/6 to-white/3 border border-white/12 rounded-2xl transition-all duration-500 hover:scale-105 cursor-pointer"
+                className="group relative p-6 backdrop-blur-2xl bg-gradient-to-br from-white/6 to-white/3 border border-white/12 rounded-2xl transition-all duration-500 hover:scale-105 cursor-pointer min-h-[280px] flex flex-col"
                 onMouseEnter={() => setHoveredElement('card')}
                 onMouseLeave={() => setHoveredElement(null)}
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-white/12 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-400"></div>
-                <div className="relative z-10 text-center">
+                <div className="relative z-10 text-center flex-1 flex flex-col">
                   <div className="w-16 h-16 bg-gradient-to-br from-white/20 to-white/8 backdrop-blur-2xl border border-white/25 rounded-2xl flex items-center justify-center mb-6 mx-auto group-hover:scale-110 group-hover:rotate-6 transition-all duration-400">
                     <type.icon className="w-8 h-8 text-white" />
                   </div>
                   <h3 className="text-lg font-bold text-white mb-3">{type.title}</h3>
-                  <p className="text-white/70 text-sm mb-4 leading-relaxed">{type.description}</p>
+                  <p className="text-white/70 text-sm mb-4 leading-relaxed flex-1">{type.description}</p>
                   
-                  <div className="space-y-2">
+                  <div className="space-y-2 mt-auto">
                     <div className={`inline-block px-3 py-1 rounded-xl text-xs font-bold ${getAccentColor(type.color)} bg-white/8 border border-white/15`}>
                       {type.stats}
                     </div>
