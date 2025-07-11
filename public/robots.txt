@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://clippy-web.netlify.app/sitemap.xml
+
+# Crawl delay (optional)
+Crawl-delay: 1
