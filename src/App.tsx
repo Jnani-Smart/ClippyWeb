@@ -444,13 +444,13 @@ function App() {
             </div>
             
             {/* Elegant Loading Indicator - Positioned Much Lower */}
-            <div className="fixed bottom-12 left-1/2 transform -translate-x-1/2 flex flex-col items-center space-y-4">
-              <div className="flex space-x-3">
-                <div className="w-3 h-3 bg-white/40 rounded-full animate-bounce-smooth"></div>
-                <div className="w-3 h-3 bg-white/40 rounded-full animate-bounce-smooth" style={{ animationDelay: '0.15s' }}></div>
-                <div className="w-3 h-3 bg-white/40 rounded-full animate-bounce-smooth" style={{ animationDelay: '0.3s' }}></div>
+            <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 flex flex-col items-center space-y-2">
+              <div className="flex space-x-2">
+                <div className="w-2 h-2 bg-white/40 rounded-full animate-bounce-smooth"></div>
+                <div className="w-2 h-2 bg-white/40 rounded-full animate-bounce-smooth" style={{ animationDelay: '0.15s' }}></div>
+                <div className="w-2 h-2 bg-white/40 rounded-full animate-bounce-smooth" style={{ animationDelay: '0.3s' }}></div>
               </div>
-              <div className="text-white/40 text-sm font-light">
+              <div className="text-white/40 text-xs font-light">
                 {isAppReady ? 'Ready!' : 'Loading...'}
               </div>
             </div>
