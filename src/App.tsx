@@ -826,19 +826,6 @@ function App() {
                   </div>
                 </button>
               </div>
-
-              {/* Development: Reset Launch Animation Button */}
-              <div className="mt-8">
-                <button 
-                  onClick={() => {
-                    sessionStorage.removeItem('clippy-launch-animation-seen');
-                    window.location.reload();
-                  }}
-                  className="group px-6 py-2 backdrop-blur-2xl bg-red-500/20 border border-red-500/30 rounded-xl font-medium text-sm transition-all duration-300 hover:bg-red-500/30 hover:scale-105"
-                >
-                  Reset Launch Animation (Dev)
-                </button>
-              </div>
             </div>
           </div>
 
