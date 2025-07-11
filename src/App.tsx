@@ -37,6 +37,9 @@ function App() {
   const [scrollY, setScrollY] = useState(0);
   const [activeCarouselIndex, setActiveCarouselIndex] = useState(1); // Start with middle image
   const [isCarouselPaused, setIsCarouselPaused] = useState(false);
+  const [showLaunchAnimation, setShowLaunchAnimation] = useState(true);
+  const [launchAnimationComplete, setLaunchAnimationComplete] = useState(false);
+  const [isAppReady, setIsAppReady] = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
   const [releaseData, setReleaseData] = useState<{
     version: string;
@@ -53,6 +56,85 @@ function App() {
     isLoading: true,
     error: null
   });
+
+  // App ready check - ensure all resources are loaded
+  useEffect(() => {
+    const checkAppReady = async () => {
+      // Wait for images to load
+      const imagePromises = [
+        '/logo.png',
+        '/Assets/1.png',
+        '/Assets/2.png',
+        '/Assets/3.png',
+        '/Assets/4.png'
+      ].map(src => {
+        return new Promise((resolve) => {
+          const img = document.createElement('img');
+          img.onload = () => resolve(true);
+          img.onerror = () => resolve(false); // Continue even if image fails
+          img.src = src;
+        });
+      });
+
+      // Wait for all images to load with a minimum delay
+      await Promise.all([
+        Promise.all(imagePromises),
+        new Promise(resolve => setTimeout(resolve, 1000)) // Minimum 1 second
+      ]);
+
+      setIsAppReady(true);
+    };
+
+    checkAppReady();
+  }, []);
+
+  // Launch animation effect
+  useEffect(() => {
+    // Check if this is the first time loading the app
+    const hasSeenLaunchAnimation = localStorage.getItem('clippy-launch-animation-seen');
+    
+    if (!hasSeenLaunchAnimation) {
+      // Show launch animation
+      setShowLaunchAnimation(true);
+      
+      // Fallback timeout to prevent getting stuck
+      const fallbackTimeout = setTimeout(() => {
+        setShowLaunchAnimation(false);
+        setTimeout(() => {
+          setLaunchAnimationComplete(true);
+        }, 150);
+        localStorage.setItem('clippy-launch-animation-seen', 'true');
+      }, 8000); // Maximum 8 seconds
+      
+      // Wait for app to be ready before starting the exit animation
+      const checkReady = setInterval(() => {
+        if (isAppReady) {
+          clearInterval(checkReady);
+          clearTimeout(fallbackTimeout);
+          
+          // Start exit animation after app is ready
+          setTimeout(() => {
+            setShowLaunchAnimation(false);
+            // Add a small delay before showing the hero to make the transition smoother
+            setTimeout(() => {
+              setLaunchAnimationComplete(true);
+            }, 150);
+            localStorage.setItem('clippy-launch-animation-seen', 'true');
+          }, 1000); // Give 1 second after app is ready
+        }
+      }, 100);
+      
+      return () => {
+        clearInterval(checkReady);
+        clearTimeout(fallbackTimeout);
+      };
+    } else {
+      // Skip launch animation if already seen
+      setShowLaunchAnimation(false);
+      setLaunchAnimationComplete(true);
+      setIsAppReady(true);
+    }
+  }, [isAppReady]);
 
   // Fetch latest release data from GitHub
   useEffect(() => {
@@ -327,6 +409,55 @@ function App() {
 
   return (
     <div className="min-h-screen w-screen bg-black text-white font-inter antialiased overflow-y-auto overflow-x-hidden">
+      {/* Launch Animation Overlay */}
+      {showLaunchAnimation && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black">
+          <div className="relative">
+            {/* Animated Background */}
+            <div className="absolute inset-0 -m-40">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/8 via-purple-500/12 to-cyan-500/8 rounded-full blur-3xl animate-pulse"></div>
+              <div className="absolute inset-0 bg-gradient-to-tl from-purple-500/6 via-pink-500/10 to-blue-500/6 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '0.8s' }}></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/4 via-blue-500/8 to-purple-500/6 rounded-full blur-xl animate-pulse" style={{ animationDelay: '1.2s' }}></div>
+            </div>
+            
+            {/* Main Logo */}
+            <div className="relative z-10 animate-launch-logo">
+              <div className="w-96 h-96 flex items-center justify-center">
+                <img 
+                  src="/logo.png" 
+                  alt="Clippy Logo" 
+                  className="w-80 h-80 animate-launch-float"
+                />
+              </div>
+              
+              {/* Elegant Text Below */}
+              <div className="text-center mt-8 animate-launch-text">
+                <h1 className="text-6xl font-black mb-4 tracking-tight leading-none font-display">
+                  <span className="inline-block text-white clippy-text">
+                    Clippy
+                  </span>
+                </h1>
+                <div className="text-xl text-white/60 font-light tracking-wide uppercase">
+                  Clipboard Manager Reimagined
+                </div>
+              </div>
+            </div>
+            
+            {/* Elegant Loading Indicator - Positioned Much Lower */}
+            <div className="fixed bottom-12 left-1/2 transform -translate-x-1/2 flex flex-col items-center space-y-4">
+              <div className="flex space-x-3">
+                <div className="w-3 h-3 bg-white/40 rounded-full animate-bounce-smooth"></div>
+                <div className="w-3 h-3 bg-white/40 rounded-full animate-bounce-smooth" style={{ animationDelay: '0.15s' }}></div>
+                <div className="w-3 h-3 bg-white/40 rounded-full animate-bounce-smooth" style={{ animationDelay: '0.3s' }}></div>
+              </div>
+              <div className="text-white/40 text-sm font-light">
+                {isAppReady ? 'Ready!' : 'Loading...'}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Advanced Adaptive Cursor */}
       <div 
         className={`fixed pointer-events-none z-50 transition-all duration-300 ease-out ${
@@ -551,16 +682,20 @@ function App() {
       <section ref={heroRef} className="relative z-10 pt-16 pb-16 px-6 sm:px-8 lg:px-12">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
-            <div className={`transition-all duration-1200 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}>
+            <div className={`transition-all duration-1200 ${isVisible && launchAnimationComplete ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}>
               {/* Hero Icon */}
               <div className="flex justify-center mb-4">
                 <div 
-                  className="relative group cursor-pointer"
+                  className={`relative group cursor-pointer transition-all duration-1000 ${
+                    launchAnimationComplete ? 'animate-hero-logo-entrance' : ''
+                  }`}
                   onMouseEnter={() => setHoveredElement('card')}
                   onMouseLeave={() => setHoveredElement(null)}
                 >
                   <div 
-                    className="w-64 h-64 flex items-center justify-center group-hover:scale-105 transition-all duration-500"
+                    className={`w-64 h-64 flex items-center justify-center group-hover:scale-105 transition-all duration-500 ${
+                      launchAnimationComplete ? 'animate-pulse-subtle' : ''
+                    }`}
                   >
                     <img 
                       src="/logo.png" 
@@ -614,6 +749,19 @@ function App() {
                     <Play className="w-7 h-7 group-hover:scale-110 transition-transform duration-300" />
                     <span>Watch Demo</span>
                   </div>
+                </button>
+              </div>
+
+              {/* Development: Reset Launch Animation Button */}
+              <div className="mt-8">
+                <button 
+                  onClick={() => {
+                    localStorage.removeItem('clippy-launch-animation-seen');
+                    window.location.reload();
+                  }}
+                  className="group px-6 py-2 backdrop-blur-2xl bg-red-500/20 border border-red-500/30 rounded-xl font-medium text-sm transition-all duration-300 hover:bg-red-500/30 hover:scale-105"
+                >
+                  Reset Launch Animation (Dev)
                 </button>
               </div>
             </div>
