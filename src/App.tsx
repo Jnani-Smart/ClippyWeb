@@ -97,50 +97,55 @@ function App() {
 
   // Launch animation effect
   useEffect(() => {
-    // Check if this is the first time loading the app
-    const hasSeenLaunchAnimation = localStorage.getItem('clippy-launch-animation-seen');
-    
+    // Use sessionStorage to show animation once per tab/window session
+    const hasSeenLaunchAnimation = sessionStorage.getItem('clippy-launch-animation-seen');
+    let minDurationTimeout: NodeJS.Timeout | null = null;
+    let fallbackTimeout: NodeJS.Timeout | null = null;
+    let checkReady: NodeJS.Timeout | null = null;
+    let minDurationPassed = false;
+
     if (!hasSeenLaunchAnimation) {
-      // Show launch animation
       setShowLaunchAnimation(true);
-      
-      // Fallback timeout to prevent getting stuck
-      const fallbackTimeout = setTimeout(() => {
+      setLaunchAnimationComplete(false);
+      // Minimum duration for the animation (e.g., 3 seconds)
+      minDurationTimeout = setTimeout(() => {
+        minDurationPassed = true;
+      }, 3000);
+
+      // Fallback timeout to prevent getting stuck (e.g., 8 seconds)
+      fallbackTimeout = setTimeout(() => {
         setShowLaunchAnimation(false);
         setTimeout(() => {
           setLaunchAnimationComplete(true);
         }, 150);
-        localStorage.setItem('clippy-launch-animation-seen', 'true');
-      }, 8000); // Maximum 8 seconds
-      
-      // Wait for app to be ready before starting the exit animation
-      const checkReady = setInterval(() => {
-        if (isAppReady) {
-          clearInterval(checkReady);
-          clearTimeout(fallbackTimeout);
-          
-          // Start exit animation after app is ready
+        sessionStorage.setItem('clippy-launch-animation-seen', 'true');
+      }, 8000);
+
+      // Wait for app to be ready and minimum duration to pass
+      checkReady = setInterval(() => {
+        if (isAppReady && minDurationPassed) {
+          clearInterval(checkReady!);
+          clearTimeout(fallbackTimeout!);
           setTimeout(() => {
             setShowLaunchAnimation(false);
-            // Add a small delay before showing the hero to make the transition smoother
             setTimeout(() => {
               setLaunchAnimationComplete(true);
             }, 150);
-            localStorage.setItem('clippy-launch-animation-seen', 'true');
-          }, 1000); // Give 1 second after app is ready
+            sessionStorage.setItem('clippy-launch-animation-seen', 'true');
+          }, 500); // Small delay for smoothness
         }
       }, 100);
-      
-      return () => {
-        clearInterval(checkReady);
-        clearTimeout(fallbackTimeout);
-      };
     } else {
-      // Skip launch animation if already seen
       setShowLaunchAnimation(false);
       setLaunchAnimationComplete(true);
       setIsAppReady(true);
     }
+
+    return () => {
+      if (checkReady) clearInterval(checkReady);
+      if (fallbackTimeout) clearTimeout(fallbackTimeout);
+      if (minDurationTimeout) clearTimeout(minDurationTimeout);
+    };
   }, [isAppReady]);
 
   // Fetch latest release data from GitHub
@@ -472,7 +477,7 @@ function App() {
             </div>
             
             {/* Main Logo */}
-            <div className="relative z-10 animate-launch-logo">
+            <div className="relative z-10">
               <div className="w-96 h-96 flex items-center justify-center">
                 <img 
                   src="/logo.png" 
@@ -482,7 +487,7 @@ function App() {
               </div>
               
               {/* Elegant Text Below */}
-              <div className="text-center mt-8 animate-launch-text">
+              <div className="text-center mt-8">
                 <h1 className="text-6xl font-black mb-4 tracking-tight leading-none font-display">
                   <span className="inline-block text-white clippy-text">
                     Clippy
@@ -807,7 +812,7 @@ function App() {
               <div className="mt-8">
                 <button 
                   onClick={() => {
-                    localStorage.removeItem('clippy-launch-animation-seen');
+                    sessionStorage.removeItem('clippy-launch-animation-seen');
                     window.location.reload();
                   }}
                   className="group px-6 py-2 backdrop-blur-2xl bg-red-500/20 border border-red-500/30 rounded-xl font-medium text-sm transition-all duration-300 hover:bg-red-500/30 hover:scale-105"
