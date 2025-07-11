@@ -115,9 +115,12 @@ function App() {
       // Fallback timeout to prevent getting stuck (e.g., 8 seconds)
       fallbackTimeout = setTimeout(() => {
         setShowLaunchAnimation(false);
-        setTimeout(() => {
-          setLaunchAnimationComplete(true);
-        }, 150);
+        // Use double requestAnimationFrame for smooth hero animation
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            setLaunchAnimationComplete(true);
+          });
+        });
         sessionStorage.setItem('clippy-launch-animation-seen', 'true');
       }, 8000);
 
@@ -128,9 +131,12 @@ function App() {
           clearTimeout(fallbackTimeout!);
           setTimeout(() => {
             setShowLaunchAnimation(false);
-            setTimeout(() => {
-              setLaunchAnimationComplete(true);
-            }, 150);
+            // Use double requestAnimationFrame for smooth hero animation
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                setLaunchAnimationComplete(true);
+              });
+            });
             sessionStorage.setItem('clippy-launch-animation-seen', 'true');
           }, 500); // Small delay for smoothness
         }
@@ -745,6 +751,7 @@ function App() {
                   className={`relative group cursor-pointer transition-all duration-1000 ${
                     launchAnimationComplete ? 'animate-hero-logo-entrance' : ''
                   }`}
+                  style={{ willChange: 'transform, opacity, filter' }}
                   onMouseEnter={() => handleSetHovered('card')}
                   onMouseLeave={() => handleSetHovered(null)}
                 >
