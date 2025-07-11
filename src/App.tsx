@@ -213,14 +213,21 @@ function App() {
       setScrollY(window.scrollY);
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
+    // Only track mouse movement on desktop devices (not mobile)
+    const isDesktop = window.matchMedia('(pointer: fine)').matches;
+    
+    if (isDesktop) {
+      window.addEventListener('mousemove', handleMouseMove);
+    }
     window.addEventListener('scroll', handleScroll);
 
     return () => {
       clearTimeout(timer);
       clearInterval(interval);
       clearInterval(carouselInterval);
-      window.removeEventListener('mousemove', handleMouseMove);
+      if (isDesktop) {
+        window.removeEventListener('mousemove', handleMouseMove);
+      }
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
@@ -407,6 +414,14 @@ function App() {
     return colors[accent as keyof typeof colors] || 'border-blue-500/30';
   };
 
+  // Helper functions for desktop-only hover effects
+  const handleSetHovered = (element: string | null) => {
+    // Only set hover state on desktop devices
+    if (window.matchMedia('(pointer: fine)').matches) {
+      setHoveredElement(element);
+    }
+  };
+
   return (
     <div className="min-h-screen w-screen bg-black text-white font-inter antialiased overflow-y-auto overflow-x-hidden">
       {/* Launch Animation Overlay */}
@@ -458,9 +473,9 @@ function App() {
         </div>
       )}
 
-      {/* Advanced Adaptive Cursor */}
+      {/* Advanced Adaptive Cursor - Hidden on mobile */}
       <div 
-        className={`fixed pointer-events-none z-50 transition-all duration-300 ease-out ${
+        className={`fixed pointer-events-none z-50 transition-all duration-300 ease-out hidden md:block ${
           hoveredElement === 'button' ? 'w-16 h-16' : 
           hoveredElement === 'card' ? 'w-12 h-12' : 
           hoveredElement === 'link' ? 'w-10 h-10' : 'w-6 h-6'
@@ -528,8 +543,8 @@ function App() {
           <div className="flex items-center justify-between">
             <div 
               className="flex items-center space-x-2 group cursor-pointer"
-              onMouseEnter={() => setHoveredElement('link')}
-              onMouseLeave={() => setHoveredElement(null)}
+              onMouseEnter={() => handleSetHovered('link')}
+              onMouseLeave={() => handleSetHovered(null)}
             >
               <div className="relative">
                 <div className="w-14 h-14 flex items-center justify-center group-hover:scale-105 transition-all duration-300">
@@ -556,8 +571,8 @@ function App() {
                   key={item.name}
                   href={item.href} 
                   className="relative group px-5 py-2 rounded-xl transition-all duration-300 hover:bg-white/8"
-                  onMouseEnter={() => setHoveredElement('link')}
-                  onMouseLeave={() => setHoveredElement(null)}
+                  onMouseEnter={() => handleSetHovered('link')}
+                  onMouseLeave={() => handleSetHovered(null)}
                 >
                   <span className="relative z-10 text-white/90 font-medium text-base">{item.name}</span>
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/8 to-cyan-500/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -571,8 +586,8 @@ function App() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="relative group p-2 rounded-xl transition-all duration-300 hover:bg-white/8"
-                  onMouseEnter={() => setHoveredElement('link')}
-                  onMouseLeave={() => setHoveredElement(null)}
+                  onMouseEnter={() => handleSetHovered('link')}
+                  onMouseLeave={() => handleSetHovered(null)}
                   title="View on GitHub"
                 >
                   <Github className="w-6 h-6 text-white/70 group-hover:text-white transition-colors duration-300" />
@@ -584,8 +599,8 @@ function App() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="relative group p-2 rounded-xl transition-all duration-300 hover:bg-white/8"
-                  onMouseEnter={() => setHoveredElement('link')}
-                  onMouseLeave={() => setHoveredElement(null)}
+                  onMouseEnter={() => handleSetHovered('link')}
+                  onMouseLeave={() => handleSetHovered(null)}
                   title="Releases"
                 >
                   <GitBranch className="w-6 h-6 text-white/70 group-hover:text-white transition-colors duration-300" />
@@ -597,8 +612,8 @@ function App() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="relative group p-2 rounded-xl transition-all duration-300 hover:bg-white/8"
-                  onMouseEnter={() => setHoveredElement('link')}
-                  onMouseLeave={() => setHoveredElement(null)}
+                  onMouseEnter={() => handleSetHovered('link')}
+                  onMouseLeave={() => handleSetHovered(null)}
                   title="Support"
                 >
                   <HelpCircle className="w-6 h-6 text-white/70 group-hover:text-white transition-colors duration-300" />
@@ -689,8 +704,8 @@ function App() {
                   className={`relative group cursor-pointer transition-all duration-1000 ${
                     launchAnimationComplete ? 'animate-hero-logo-entrance' : ''
                   }`}
-                  onMouseEnter={() => setHoveredElement('card')}
-                  onMouseLeave={() => setHoveredElement(null)}
+                  onMouseEnter={() => handleSetHovered('card')}
+                  onMouseLeave={() => handleSetHovered(null)}
                 >
                   <div 
                     className={`w-64 h-64 flex items-center justify-center group-hover:scale-105 transition-all duration-500 ${
@@ -729,8 +744,8 @@ function App() {
                 <a 
                   href="#download"
                   className="group relative px-12 py-4 bg-gradient-to-br from-white/15 to-white/8 backdrop-blur-2xl border border-white/20 rounded-2xl font-bold text-lg transition-all duration-400 hover:scale-105 hover:shadow-xl hover:bg-white/20"
-                  onMouseEnter={() => setHoveredElement('button')}
-                  onMouseLeave={() => setHoveredElement(null)}
+                  onMouseEnter={() => handleSetHovered('button')}
+                  onMouseLeave={() => handleSetHovered(null)}
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-400/15 via-purple-400/10 to-cyan-400/15 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   <div className="relative flex items-center space-x-3">
@@ -742,8 +757,8 @@ function App() {
                 
                 <button 
                   className="group px-12 py-4 backdrop-blur-2xl bg-white/8 border border-white/15 rounded-2xl font-bold text-lg transition-all duration-400 hover:bg-white/12 hover:scale-105"
-                  onMouseEnter={() => setHoveredElement('button')}
-                  onMouseLeave={() => setHoveredElement(null)}
+                  onMouseEnter={() => handleSetHovered('button')}
+                  onMouseLeave={() => handleSetHovered(null)}
                 >
                   <div className="flex items-center space-x-3">
                     <Play className="w-7 h-7 group-hover:scale-110 transition-transform duration-300" />
@@ -775,8 +790,8 @@ function App() {
                 className={`group relative p-6 backdrop-blur-2xl bg-gradient-to-br ${feature.gradient} border border-white/12 rounded-2xl transition-all duration-500 hover:scale-105 cursor-pointer ${
                   activeFeature === index ? `ring-2 ring-white/30 ${getBorderColor(feature.accent)}` : ''
                 }`}
-                onMouseEnter={() => setHoveredElement('card')}
-                onMouseLeave={() => setHoveredElement(null)}
+                onMouseEnter={() => handleSetHovered('card')}
+                onMouseLeave={() => handleSetHovered(null)}
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-white/8 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <div className="relative z-10">
@@ -809,8 +824,8 @@ function App() {
               <div
                 key={index}
                 className="group relative p-6 backdrop-blur-2xl bg-gradient-to-br from-white/6 to-white/3 border border-white/12 rounded-2xl transition-all duration-500 hover:scale-105 cursor-pointer"
-                onMouseEnter={() => setHoveredElement('card')}
-                onMouseLeave={() => setHoveredElement(null)}
+                onMouseEnter={() => handleSetHovered('card')}
+                onMouseLeave={() => handleSetHovered(null)}
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-white/12 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-400"></div>
                 <div className="relative z-10">
@@ -852,8 +867,8 @@ function App() {
               <div 
                 key={index} 
                 className="group relative p-6 backdrop-blur-2xl bg-gradient-to-br from-white/6 to-white/3 border border-white/12 rounded-2xl transition-all duration-500 hover:scale-105 cursor-pointer min-h-[280px] flex flex-col"
-                onMouseEnter={() => setHoveredElement('card')}
-                onMouseLeave={() => setHoveredElement(null)}
+                onMouseEnter={() => handleSetHovered('card')}
+                onMouseLeave={() => handleSetHovered(null)}
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-white/12 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-400"></div>
                 <div className="relative z-10 text-center flex-1 flex flex-col">
@@ -1026,8 +1041,8 @@ function App() {
               <div
                 key={index}
                 className="group relative p-6 backdrop-blur-2xl bg-gradient-to-br from-white/8 to-white/4 border border-white/15 rounded-2xl transition-all duration-500 hover:scale-105 cursor-pointer"
-                onMouseEnter={() => setHoveredElement('card')}
-                onMouseLeave={() => setHoveredElement(null)}
+                onMouseEnter={() => handleSetHovered('card')}
+                onMouseLeave={() => handleSetHovered(null)}
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-white/12 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-400"></div>
                 <div className="relative z-10">
@@ -1128,8 +1143,8 @@ function App() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="group relative px-8 py-4 bg-gradient-to-br from-blue-500/80 to-purple-500/80 backdrop-blur-2xl border border-blue-500/60 rounded-2xl font-bold text-lg transition-all duration-400 hover:scale-105 hover:shadow-xl text-white"
-                  onMouseEnter={() => setHoveredElement('button')}
-                  onMouseLeave={() => setHoveredElement(null)}
+                  onMouseEnter={() => handleSetHovered('button')}
+                  onMouseLeave={() => handleSetHovered(null)}
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 via-purple-400/15 to-cyan-400/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   <div className="relative flex items-center space-x-3">
@@ -1148,8 +1163,8 @@ function App() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="group relative px-8 py-4 bg-gradient-to-br from-white/15 to-white/8 backdrop-blur-2xl border border-white/25 rounded-2xl font-bold text-lg transition-all duration-400 hover:scale-105 hover:shadow-xl text-white"
-                  onMouseEnter={() => setHoveredElement('button')}
-                  onMouseLeave={() => setHoveredElement(null)}
+                  onMouseEnter={() => handleSetHovered('button')}
+                  onMouseLeave={() => handleSetHovered(null)}
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-white/10 via-white/5 to-white/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   <div className="relative flex items-center space-x-3">
@@ -1192,8 +1207,8 @@ function App() {
           <div className="flex flex-col lg:flex-row justify-between items-center space-y-6 lg:space-y-0">
             <div 
               className="flex items-center space-x-2 group cursor-pointer"
-              onMouseEnter={() => setHoveredElement('link')}
-              onMouseLeave={() => setHoveredElement(null)}
+              onMouseEnter={() => handleSetHovered('link')}
+              onMouseLeave={() => handleSetHovered(null)}
             >
               <div className="w-14 h-14 flex items-center justify-center group-hover:scale-110 transition-all duration-300">
                 <img 
@@ -1214,8 +1229,8 @@ function App() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group flex items-center space-x-2 text-white/70 hover:text-white transition-colors duration-300"
-                onMouseEnter={() => setHoveredElement('link')}
-                onMouseLeave={() => setHoveredElement(null)}
+                onMouseEnter={() => handleSetHovered('link')}
+                onMouseLeave={() => handleSetHovered(null)}
               >
                 <Github className="w-5 h-5" />
                 <span className="text-sm font-medium">GitHub</span>
@@ -1226,8 +1241,8 @@ function App() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group flex items-center space-x-2 text-white/70 hover:text-white transition-colors duration-300"
-                onMouseEnter={() => setHoveredElement('link')}
-                onMouseLeave={() => setHoveredElement(null)}
+                onMouseEnter={() => handleSetHovered('link')}
+                onMouseLeave={() => handleSetHovered(null)}
               >
                 <GitBranch className="w-5 h-5" />
                 <span className="text-sm font-medium">Releases</span>
@@ -1238,8 +1253,8 @@ function App() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group flex items-center space-x-2 text-white/70 hover:text-white transition-colors duration-300"
-                onMouseEnter={() => setHoveredElement('link')}
-                onMouseLeave={() => setHoveredElement(null)}
+                onMouseEnter={() => handleSetHovered('link')}
+                onMouseLeave={() => handleSetHovered(null)}
               >
                 <HelpCircle className="w-5 h-5" />
                 <span className="text-sm font-medium">Support</span>
@@ -1250,8 +1265,8 @@ function App() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group flex items-center space-x-2 text-white/70 hover:text-white transition-colors duration-300"
-                onMouseEnter={() => setHoveredElement('link')}
-                onMouseLeave={() => setHoveredElement(null)}
+                onMouseEnter={() => handleSetHovered('link')}
+                onMouseLeave={() => handleSetHovered(null)}
               >
                 <Scale className="w-5 h-5" />
                 <span className="text-sm font-medium">License</span>

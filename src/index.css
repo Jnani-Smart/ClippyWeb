@@ -103,12 +103,26 @@
 }
 
 /* Enhanced Cursor System */
-* {
-  cursor: none;
+/* Hide cursor on desktop, show on mobile */
+@media (pointer: fine) {
+  * {
+    cursor: none;
+  }
+
+  a, button, [role="button"], input, textarea, select {
+    cursor: none;
+  }
 }
 
-a, button, [role="button"], input, textarea, select {
-  cursor: none;
+/* Show default cursor on mobile/touch devices */
+@media (pointer: coarse) {
+  * {
+    cursor: auto;
+  }
+
+  a, button, [role="button"], input, textarea, select {
+    cursor: pointer;
+  }
 }
 
 /* Smooth Transitions */
