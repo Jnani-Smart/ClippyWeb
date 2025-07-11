@@ -40,7 +40,14 @@ function App() {
   const [showLaunchAnimation, setShowLaunchAnimation] = useState(true);
   const [launchAnimationComplete, setLaunchAnimationComplete] = useState(false);
   const [isAppReady, setIsAppReady] = useState(false);
+  
+  // Intersection observer states for scroll animations
+  const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set());
+  
   const heroRef = useRef<HTMLDivElement>(null);
+  const featuresRef = useRef<HTMLDivElement>(null);
+  const galleryRef = useRef<HTMLDivElement>(null);
+  const downloadRef = useRef<HTMLDivElement>(null);
   const [releaseData, setReleaseData] = useState<{
     version: string;
     downloadUrl: string;
@@ -242,6 +249,35 @@ function App() {
       setIsCarouselPaused(false);
     }, 30000);
   };
+
+  // Intersection Observer for scroll animations
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setVisibleSections((prev) => new Set([...prev, entry.target.id]));
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    const sections = [heroRef, featuresRef, galleryRef, downloadRef];
+    sections.forEach((ref) => {
+      if (ref.current) {
+        observer.observe(ref.current);
+      }
+    });
+
+    return () => {
+      sections.forEach((ref) => {
+        if (ref.current) {
+          observer.unobserve(ref.current);
+        }
+      });
+    };
+  }, []);
 
   const features = [
     {
@@ -694,7 +730,7 @@ function App() {
       </header>
 
       {/* Hero Section - Redesigned */}
-      <section ref={heroRef} className="relative z-10 pt-16 pb-16 px-6 sm:px-8 lg:px-12">
+      <section ref={heroRef} id="hero" className="relative z-10 pt-16 pb-16 px-6 sm:px-8 lg:px-12">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <div className={`transition-all duration-1200 ${isVisible && launchAnimationComplete ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}>
@@ -808,7 +844,7 @@ function App() {
       </section>
 
       {/* Detailed Features Section */}
-      <section id="features" className="relative z-10 py-16 px-6 sm:px-8 lg:px-12">
+      <section ref={featuresRef} id="features" className="relative z-10 py-16 px-6 sm:px-8 lg:px-12">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-black mb-6 tracking-tight font-display">
@@ -823,7 +859,10 @@ function App() {
             {detailedFeatures.map((feature, index) => (
               <div
                 key={index}
-                className="group relative p-6 backdrop-blur-2xl bg-gradient-to-br from-white/6 to-white/3 border border-white/12 rounded-2xl transition-all duration-500 hover:scale-105 cursor-pointer"
+                className={`group relative p-6 backdrop-blur-2xl bg-gradient-to-br from-white/6 to-white/3 border border-white/12 rounded-2xl transition-all duration-500 hover:scale-105 cursor-pointer ${
+                  visibleSections.has('features') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+                }`}
+                style={{ transitionDelay: `${index * 100}ms` }}
                 onMouseEnter={() => handleSetHovered('card')}
                 onMouseLeave={() => handleSetHovered(null)}
               >
@@ -891,7 +930,7 @@ function App() {
       </section>
 
       {/* Gallery Section */}
-      <section id="gallery" className="relative z-10 py-12 sm:py-16 px-4 sm:px-6 lg:px-12">
+      <section ref={galleryRef} id="gallery" className="relative z-10 py-12 sm:py-16 px-4 sm:px-6 lg:px-12">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12 sm:mb-16">
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black mb-4 tracking-tight font-display">
@@ -967,10 +1006,12 @@ function App() {
                         ? 'scale-105 sm:scale-110 z-20 shadow-xl shadow-black/30' 
                         : 'scale-85 sm:scale-90 opacity-70 hover:opacity-90 hover:scale-95'
                       }
+                      ${visibleSections.has('gallery') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}
                     `}
                     style={{
                       animation: `float ${4 + index * 0.3}s ease-in-out infinite alternate`,
-                      animationDelay: `${index * 0.15}s`
+                      animationDelay: `${index * 0.15}s`,
+                      transitionDelay: `${index * 100}ms`
                     }}
                     onClick={() => handleImageSelect(index)}
                   >
@@ -1072,24 +1113,32 @@ function App() {
       </section>
 
       {/* Download Section */}
-      <section id="download" className="relative z-10 py-16 px-6 sm:px-8 lg:px-12">
+      <section ref={downloadRef} id="download" className="relative z-10 py-8 sm:py-16 px-4 sm:px-8 lg:px-12">
         <div className="max-w-5xl mx-auto">
-          <div className="relative backdrop-blur-2xl bg-gradient-to-br from-white/12 to-white/6 border border-white/15 rounded-3xl overflow-hidden">
+          <div className="relative backdrop-blur-2xl bg-gradient-to-br from-white/12 to-white/6 border border-white/15 rounded-2xl sm:rounded-3xl overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-500/8 via-purple-500/6 to-cyan-500/8"></div>
             
-            <div className="relative z-10 p-12 text-center">
+            <div className={`relative z-10 p-6 sm:p-8 md:p-12 text-center transition-all duration-1000 ${
+              visibleSections.has('download') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+            }`}>
               {/* Download Icon */}
-              <div className="flex justify-center mb-6">
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-500/20 to-purple-500/20 backdrop-blur-2xl border border-blue-500/30 rounded-2xl flex items-center justify-center">
-                  <Download className="w-8 h-8 text-white" />
+              <div className={`flex justify-center mb-4 sm:mb-6 transition-all duration-700 delay-200 ${
+                visibleSections.has('download') ? 'opacity-100 scale-100' : 'opacity-0 scale-75'
+              }`}>
+                <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-blue-500/20 to-purple-500/20 backdrop-blur-2xl border border-blue-500/30 rounded-xl sm:rounded-2xl flex items-center justify-center">
+                  <Download className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                 </div>
               </div>
               
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-black mb-4 tracking-tight font-display">
+              <h2 className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black mb-3 sm:mb-4 tracking-tight font-display px-2 transition-all duration-700 delay-300 ${
+                visibleSections.has('download') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+              }`}>
                 <span className="inline-block text-white">Ready to Transform Your Workflow?</span>
               </h2>
               
-              <p className="text-lg md:text-xl text-white/80 mb-6 max-w-3xl mx-auto font-light leading-relaxed">
+              <p className={`text-base sm:text-lg md:text-xl text-white/80 mb-6 max-w-3xl mx-auto font-light leading-relaxed px-2 transition-all duration-700 delay-400 ${
+                visibleSections.has('download') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+              }`}>
                 Join thousands of developers and power users who have upgraded their clipboard experience.
               </p>
               
@@ -1101,10 +1150,13 @@ function App() {
               )}
               
               {/* Version Info */}
-              <div className="flex justify-center mb-8">
-                <div className="flex items-center gap-8 p-6 backdrop-blur-2xl bg-white/8 border border-white/15 rounded-2xl">
+              <div className={`flex justify-center mb-6 sm:mb-8 transition-all duration-700 delay-500 ${
+                visibleSections.has('download') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+              }`}>
+                <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-8 p-4 sm:p-6 backdrop-blur-2xl bg-white/8 border border-white/15 rounded-xl sm:rounded-2xl w-full sm:w-auto">
                   <div className="text-center">
-                    <div className="text-white font-bold text-lg flex items-center justify-center">
+                    <div className="text-white/70 text-xs sm:text-sm uppercase tracking-wide mb-1">Version</div>
+                    <div className="text-white font-bold text-base sm:text-lg flex items-center justify-center">
                       {releaseData.isLoading ? (
                         <div className="flex items-center space-x-2">
                           <Loader className="w-4 h-4 animate-spin" />
@@ -1115,21 +1167,24 @@ function App() {
                       )}
                     </div>
                   </div>
-                  <div className="w-px h-8 bg-white/20"></div>
+                  <div className="hidden sm:block w-px h-8 bg-white/20"></div>
                   <div className="text-center">
-                    <div className="text-white font-bold text-lg">
+                    <div className="text-white/70 text-xs sm:text-sm uppercase tracking-wide mb-1">Size</div>
+                    <div className="text-white font-bold text-base sm:text-lg">
                       {releaseData.isLoading ? "—" : releaseData.fileSize}
                     </div>
                   </div>
-                  <div className="w-px h-8 bg-white/20"></div>
+                  <div className="hidden sm:block w-px h-8 bg-white/20"></div>
                   <div className="text-center">
-                    <div className="text-white font-bold text-lg">macOS 11.0+</div>
+                    <div className="text-white/70 text-xs sm:text-sm uppercase tracking-wide mb-1">Requirements</div>
+                    <div className="text-white font-bold text-base sm:text-lg">macOS 11.0+</div>
                   </div>
                   {releaseData.publishedAt && (
                     <>
-                      <div className="w-px h-8 bg-white/20"></div>
+                      <div className="hidden sm:block w-px h-8 bg-white/20"></div>
                       <div className="text-center">
-                        <div className="text-white font-bold text-lg">{releaseData.publishedAt}</div>
+                        <div className="text-white/70 text-xs sm:text-sm uppercase tracking-wide mb-1">Released</div>
+                        <div className="text-white font-bold text-base sm:text-lg">{releaseData.publishedAt}</div>
                       </div>
                     </>
                   )}
@@ -1137,24 +1192,26 @@ function App() {
               </div>
               
               {/* Download Actions */}
-              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+              <div className={`flex flex-col gap-3 sm:gap-4 justify-center mb-6 sm:mb-8 transition-all duration-700 delay-600 ${
+                visibleSections.has('download') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+              }`}>
                 <a
                   href={releaseData.downloadUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group relative px-8 py-4 bg-gradient-to-br from-blue-500/80 to-purple-500/80 backdrop-blur-2xl border border-blue-500/60 rounded-2xl font-bold text-lg transition-all duration-400 hover:scale-105 hover:shadow-xl text-white"
+                  className="group relative px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-br from-blue-500/80 to-purple-500/80 backdrop-blur-2xl border border-blue-500/60 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg transition-all duration-400 hover:scale-105 hover:shadow-xl text-white w-full sm:w-auto"
                   onMouseEnter={() => handleSetHovered('button')}
                   onMouseLeave={() => handleSetHovered(null)}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 via-purple-400/15 to-cyan-400/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  <div className="relative flex items-center space-x-3">
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 via-purple-400/15 to-cyan-400/20 rounded-xl sm:rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="relative flex items-center justify-center space-x-3">
                     {releaseData.isLoading ? (
-                      <Loader className="w-6 h-6 animate-spin" />
+                      <Loader className="w-5 h-5 sm:w-6 sm:h-6 animate-spin" />
                     ) : (
-                      <Download className="w-6 h-6 group-hover:animate-bounce" />
+                      <Download className="w-5 h-5 sm:w-6 sm:h-6 group-hover:animate-bounce" />
                     )}
                     <span>{releaseData.isLoading ? "Fetching latest release..." : "Download for macOS"}</span>
-                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                    <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform duration-300" />
                   </div>
                 </a>
                 
@@ -1162,15 +1219,15 @@ function App() {
                   href="https://github.com/Jnani-Smart/Clippy"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group relative px-8 py-4 bg-gradient-to-br from-white/15 to-white/8 backdrop-blur-2xl border border-white/25 rounded-2xl font-bold text-lg transition-all duration-400 hover:scale-105 hover:shadow-xl text-white"
+                  className="group relative px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-br from-white/15 to-white/8 backdrop-blur-2xl border border-white/25 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg transition-all duration-400 hover:scale-105 hover:shadow-xl text-white w-full sm:w-auto"
                   onMouseEnter={() => handleSetHovered('button')}
                   onMouseLeave={() => handleSetHovered(null)}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-white/10 via-white/5 to-white/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  <div className="relative flex items-center space-x-3">
-                    <Github className="w-6 h-6" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/10 via-white/5 to-white/10 rounded-xl sm:rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="relative flex items-center justify-center space-x-3">
+                    <Github className="w-5 h-5 sm:w-6 sm:h-6" />
                     <span>View Source</span>
-                    <ExternalLink className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                    <ExternalLink className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform duration-300" />
                   </div>
                 </a>
               </div>
@@ -1178,7 +1235,9 @@ function App() {
 
               
               {/* Trust Indicators */}
-              <div className="flex items-center justify-center space-x-8 text-white/70 mb-8">
+              <div className={`flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-8 text-white/70 mb-6 sm:mb-8 transition-all duration-700 delay-700 ${
+                visibleSections.has('download') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+              }`}>
                 <div className="flex items-center space-x-3">
                   <Shield className="w-5 h-5 text-green-400" />
                   <span className="text-sm font-semibold">100% Secure</span>
@@ -1190,9 +1249,11 @@ function App() {
               </div>
               
               {/* Download Note */}
-              <div className="flex flex-col items-center justify-center space-y-3">
-                <div className="flex items-center justify-center space-x-2 text-white">
-                  <HelpCircle className="w-5 h-5" />
+              <div className={`flex flex-col items-center justify-center space-y-3 transition-all duration-700 delay-800 ${
+                visibleSections.has('download') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+              }`}>
+                <div className="flex items-center justify-center space-x-2 text-white text-sm sm:text-base">
+                  <HelpCircle className="w-4 h-4 sm:w-5 sm:h-5" />
                   <span>Free and open source. No registration required.</span>
                 </div>
               </div>
