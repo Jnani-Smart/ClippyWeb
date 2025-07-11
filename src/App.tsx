@@ -930,7 +930,7 @@ function App() {
       </section>
 
       {/* Gallery Section */}
-      <section ref={galleryRef} id="gallery" className="relative z-10 py-12 sm:py-16 px-4 sm:px-6 lg:px-12">
+      <section ref={galleryRef} id="gallery" className="relative z-10 py-12 sm:py-16 px-4 sm:px-6 lg:px-12 overscroll-contain">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12 sm:mb-16">
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black mb-4 tracking-tight font-display">
@@ -941,7 +941,7 @@ function App() {
             </p>
           </div>
 
-          <div className="relative overflow-hidden">
+          <div className="relative overflow-hidden gallery-container">
             {/* Mobile-First Carousel Container */}
             <div className="block sm:hidden">
               {/* Mobile: Single Large Image Display */}

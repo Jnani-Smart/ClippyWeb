@@ -102,6 +102,14 @@
   overflow: visible !important;
 }
 
+.overscroll-contain {
+  overscroll-behavior: contain;
+}
+
+.gallery-container {
+  min-height: 600px; /* Adjust as needed */
+}
+
 /* Enhanced Cursor System */
 /* Hide cursor on desktop, show on mobile */
 @media (pointer: fine) {
