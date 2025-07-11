@@ -236,15 +236,15 @@ function App() {
     { 
       icon: Link, 
       title: "Smart URLs", 
-      description: "Automatic link previews, metadata extraction, and intelligent bookmark management",
+      description: "Store and organize URLs with quick preview options when you need to check content",
       color: "blue",
-      stats: "Auto Preview",
+      stats: "Quick Preview",
       usage: "78%"
     },
     { 
       icon: Image, 
       title: "Visual Content", 
-      description: "Screenshots, images, and visual assets with automatic thumbnail generation and preview",
+      description: "Screenshots, images, and visual assets with quick preview and easy access",
       color: "orange",
       stats: "Any Format",
       usage: "45%"
