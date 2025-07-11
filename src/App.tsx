@@ -512,26 +512,26 @@ function App() {
       {/* Advanced Adaptive Cursor - Hidden on mobile */}
       <div 
         className={`fixed pointer-events-none z-50 transition-all duration-300 ease-out hidden md:block ${
-          hoveredElement === 'button' ? 'w-16 h-16' : 
-          hoveredElement === 'card' ? 'w-12 h-12' : 
-          hoveredElement === 'link' ? 'w-10 h-10' : 'w-6 h-6'
+          hoveredElement === 'button' ? 'w-10 h-10' : 
+          hoveredElement === 'card' ? 'w-8 h-8' : 
+          hoveredElement === 'link' ? 'w-7 h-7' : 'w-5 h-5'
         }`}
         style={{
-          left: mousePosition.x - (hoveredElement === 'button' ? 32 : hoveredElement === 'card' ? 24 : hoveredElement === 'link' ? 20 : 12),
-          top: mousePosition.y - (hoveredElement === 'button' ? 32 : hoveredElement === 'card' ? 24 : hoveredElement === 'link' ? 20 : 12)
+          left: mousePosition.x - (hoveredElement === 'button' ? 20 : hoveredElement === 'card' ? 16 : hoveredElement === 'link' ? 14 : 10),
+          top: mousePosition.y - (hoveredElement === 'button' ? 20 : hoveredElement === 'card' ? 16 : hoveredElement === 'link' ? 14 : 10)
         }}
       >
         <div className={`w-full h-full rounded-full transition-all duration-300 ${
-          hoveredElement === 'button' ? 'bg-gradient-to-r from-blue-400 to-purple-400 opacity-80' :
-          hoveredElement === 'card' ? 'bg-white opacity-60' :
-          hoveredElement === 'link' ? 'bg-white opacity-70' :
-          'bg-white opacity-50'
-        } shadow-2xl`}></div>
+          hoveredElement === 'button' ? 'bg-gradient-to-r from-gray-300 to-gray-500 opacity-80' :
+          hoveredElement === 'card' ? 'bg-gray-200 opacity-60' :
+          hoveredElement === 'link' ? 'bg-gray-300 opacity-70' :
+          'bg-gray-400 opacity-50'
+        }`}></div>
         <div className={`absolute inset-1 rounded-full transition-all duration-300 ${
-          hoveredElement === 'button' ? 'bg-white opacity-30' :
-          hoveredElement === 'card' ? 'bg-white opacity-40' :
-          hoveredElement === 'link' ? 'bg-white opacity-50' :
-          'bg-white opacity-30'
+          hoveredElement === 'button' ? 'bg-white opacity-20' :
+          hoveredElement === 'card' ? 'bg-white opacity-30' :
+          hoveredElement === 'link' ? 'bg-white opacity-40' :
+          'bg-white opacity-20'
         }`}></div>
       </div>
 
