@@ -776,15 +776,15 @@ function App() {
             </div>
 
             {/* Auto-scroll indicators */}
-            <div className="flex justify-center space-x-3 mt-8">
+            <div className="flex justify-center space-x-3 mt-12 mb-6">
               {[1, 2, 3, 4].map((_, index) => (
                 <div
                   key={index}
                   className={`
-                    w-3 h-3 rounded-full transition-all duration-700 ease-in-out cursor-pointer
+                    w-3 h-3 rounded-full transition-all duration-500 ease-in-out cursor-pointer
                     ${index === activeCarouselIndex 
-                      ? 'bg-gradient-to-r from-blue-500 to-purple-500 scale-125' 
-                      : 'bg-white/30 hover:bg-white/50'
+                      ? 'bg-white/90 backdrop-blur-xl border border-white/40 shadow-lg shadow-white/20' 
+                      : 'bg-gray-600/80 border border-gray-500/50 backdrop-blur-sm hover:bg-gray-500/80'
                     }
                   `}
                   onClick={() => setActiveCarouselIndex(index)}
