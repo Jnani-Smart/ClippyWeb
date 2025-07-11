@@ -253,35 +253,39 @@ html {
   }
 }
 
-/* Animation Classes */
-.animate-float {
-  animation: float 8s ease-in-out infinite;
+/* Floating Animation for Gallery Carousel */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  100% {
+    transform: translateY(-8px);
+  }
 }
 
-.animate-glow {
-  animation: glow 3s ease-in-out infinite;
+/* Auto-scroll carousel animation */
+@keyframes carousel-slide {
+  0% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-25%);
+  }
+  50% {
+    transform: translateX(-50%);
+  }
+  75% {
+    transform: translateX(-75%);
+  }
+  100% {
+    transform: translateX(0);
+  }
 }
 
-.animate-pulse-glow {
-  animation: pulse-glow 2s ease-in-out infinite;
-}
-
-.animate-shimmer {
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-  background-size: 200% 100%;
-  animation: shimmer 2s infinite;
-}
-
-.animate-rotate-slow {
-  animation: rotate-slow 20s linear infinite;
-}
-
-.animate-float-bg {
-  animation: float-bg 20s ease-in-out infinite;
-}
-
-.animate-bounce-subtle {
-  animation: bounce-subtle 2s ease-in-out infinite;
+/* Enhanced carousel styles */
+.carousel-container {
+  animation: carousel-slide 15s infinite ease-in-out;
+  animation-delay: 3s;
 }
 
 /* Enhanced Gradient System */

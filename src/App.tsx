@@ -17,7 +17,6 @@ import {
   Code,
   Eye,
   Settings,
-  Sparkles,
   ArrowRight,
   Clipboard,
   Github,
@@ -36,6 +35,7 @@ function App() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [hoveredElement, setHoveredElement] = useState<string | null>(null);
   const [scrollY, setScrollY] = useState(0);
+  const [activeCarouselIndex, setActiveCarouselIndex] = useState(1); // Start with middle image
   const heroRef = useRef<HTMLDivElement>(null);
   const [releaseData, setReleaseData] = useState<{
     version: string;
@@ -115,6 +115,11 @@ function App() {
       setActiveFeature((prev) => (prev + 1) % 4);
     }, 4000);
 
+    // Carousel auto-scroll
+    const carouselInterval = setInterval(() => {
+      setActiveCarouselIndex((prev) => (prev + 1) % 4);
+    }, 4000);
+
     const handleMouseMove = (e: MouseEvent) => {
       setMousePosition({ x: e.clientX, y: e.clientY });
     };
@@ -129,6 +134,7 @@ function App() {
     return () => {
       clearTimeout(timer);
       clearInterval(interval);
+      clearInterval(carouselInterval);
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('scroll', handleScroll);
     };
@@ -719,71 +725,72 @@ function App() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              {
-                title: "Main Interface",
-                description: "Beautiful VisionOS-inspired design with frosted glass effects",
-                image: "/api/placeholder/400/300",
-                icon: Eye
-              },
-              {
-                title: "Code Highlighting", 
-                description: "Advanced syntax highlighting for 20+ languages",
-                image: "/api/placeholder/400/300",
-                icon: Code
-              },
-              {
-                title: "Smart Search",
-                description: "Find anything instantly with intelligent filtering", 
-                image: "/api/placeholder/400/300",
-                icon: Search
-              },
-              {
-                title: "Settings Panel",
-                description: "Customize every aspect of your experience",
-                image: "/api/placeholder/400/300", 
-                icon: Settings
-              },
-              {
-                title: "Privacy Controls",
-                description: "Complete control over your data and security",
-                image: "/api/placeholder/400/300",
-                icon: Shield
-              },
-              {
-                title: "Quick Access",
-                description: "Instant clipboard access with ⌘⇧V shortcut",
-                image: "/api/placeholder/400/300",
-                icon: Zap
-              }
-            ].map((item, index) => (
-              <div
-                key={index}
-                className="group relative backdrop-blur-2xl bg-gradient-to-br from-white/6 to-white/3 border border-white/12 rounded-2xl overflow-hidden transition-all duration-500 hover:scale-105 cursor-pointer"
-                onMouseEnter={() => setHoveredElement('card')}
-                onMouseLeave={() => setHoveredElement(null)}
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-white/12 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400"></div>
-                
-                {/* Image Placeholder */}
-                <div className="relative h-48 bg-gradient-to-br from-blue-500/20 via-purple-500/15 to-cyan-500/20 flex items-center justify-center">
-                  <item.icon className="w-16 h-16 text-white" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-                </div>
-                
-                {/* Content */}
-                <div className="relative z-10 p-6">
-                  <h3 className="text-xl font-bold text-white mb-2">{item.title}</h3>
-                  <p className="text-white/70 text-sm leading-relaxed">{item.description}</p>
-                  
-                  <div className="mt-4 flex items-center text-blue-400 text-sm font-medium">
-                    <span>View Details</span>
-                    <ExternalLink className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
+          <div className="relative overflow-hidden">
+            {/* Carousel Container */}
+            <div className="flex items-center justify-center space-x-8 py-12">
+              {/* Images */}
+              {[1, 2, 3, 4].map((num, index) => {
+                const isCenter = index === activeCarouselIndex; // Dynamic center based on state
+                return (
+                  <div
+                    key={num}
+                    className={`
+                      relative backdrop-blur-2xl bg-gradient-to-br from-white/10 to-white/5 
+                      border border-white/20 rounded-3xl overflow-hidden transition-all duration-700 ease-in-out
+                      ${isCenter 
+                        ? 'scale-110 z-20 shadow-xl shadow-black/30' 
+                        : 'scale-90 opacity-70 hover:opacity-90 hover:scale-95'
+                      }
+                    `}
+                    style={{
+                      animation: `float ${4 + index * 0.3}s ease-in-out infinite alternate`,
+                      animationDelay: `${index * 0.15}s`
+                    }}
+                  >
+                    {/* Image */}
+                    <div className="relative">
+                      <img
+                        src={`/Assets/${num}.png`}
+                        alt={`Clippy Interface ${num}`}
+                        className={`
+                          w-full h-auto object-cover rounded-3xl transition-all duration-700 ease-in-out
+                          ${isCenter ? 'w-80 md:w-96' : 'w-64 md:w-72'}
+                        `}
+                      />
+                      
+                      {/* Subtle gradient overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent rounded-3xl"></div>
+                      
+                      {/* Featured label for center image */}
+                      {isCenter && (
+                        <div className="absolute bottom-4 left-4">
+                          <div className="backdrop-blur-xl bg-white/20 border border-white/30 rounded-full px-4 py-2">
+                            <span className="text-white text-sm font-medium">Featured</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              </div>
-            ))}
+                );
+              })}
+            </div>
+
+            {/* Auto-scroll indicators */}
+            <div className="flex justify-center space-x-3 mt-8">
+              {[1, 2, 3, 4].map((_, index) => (
+                <div
+                  key={index}
+                  className={`
+                    w-3 h-3 rounded-full transition-all duration-700 ease-in-out cursor-pointer
+                    ${index === activeCarouselIndex 
+                      ? 'bg-gradient-to-r from-blue-500 to-purple-500 scale-125' 
+                      : 'bg-white/30 hover:bg-white/50'
+                    }
+                  `}
+                  onClick={() => setActiveCarouselIndex(index)}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </section>
