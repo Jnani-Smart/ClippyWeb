@@ -469,6 +469,16 @@ function App() {
     }
   };
 
+  // Professional cursor sizing logic
+  const cursorSizeMap: Record<string, string> = {
+    button: 'clamp(2.2rem, 3vw, 2.8rem)', // 35-45px
+    card: 'clamp(1.7rem, 2.5vw, 2.2rem)', // 27-35px
+    link: 'clamp(1.3rem, 2vw, 1.7rem)', // 21-27px
+    default: 'clamp(1rem, 1.5vw, 1.3rem)', // 16-21px
+  };
+  const cursorSize = cursorSizeMap[hoveredElement || 'default'] || cursorSizeMap.default;
+  const cursorOffset = `calc(${cursorSize} / 2)`;
+
   return (
     <div className="min-h-screen w-screen bg-black text-white font-inter antialiased overflow-y-auto overflow-x-hidden">
       {/* Launch Animation Overlay */}
@@ -522,14 +532,16 @@ function App() {
 
       {/* Advanced Adaptive Cursor - Hidden on mobile */}
       <div 
-        className={`fixed pointer-events-none z-50 transition-all duration-300 ease-out hidden md:block ${
-          hoveredElement === 'button' ? 'w-10 h-10' : 
-          hoveredElement === 'card' ? 'w-8 h-8' : 
-          hoveredElement === 'link' ? 'w-7 h-7' : 'w-5 h-5'
-        }`}
+        className="fixed pointer-events-none z-50 transition-all duration-300 ease-out hidden md:block"
         style={{
-          left: mousePosition.x - (hoveredElement === 'button' ? 20 : hoveredElement === 'card' ? 16 : hoveredElement === 'link' ? 14 : 10),
-          top: mousePosition.y - (hoveredElement === 'button' ? 20 : hoveredElement === 'card' ? 16 : hoveredElement === 'link' ? 14 : 10)
+          width: cursorSize,
+          height: cursorSize,
+          left: `calc(${mousePosition.x}px - ${cursorOffset})`,
+          top: `calc(${mousePosition.y}px - ${cursorOffset})`,
+          minWidth: '1rem',
+          minHeight: '1rem',
+          maxWidth: '3.5rem',
+          maxHeight: '3.5rem',
         }}
       >
         <div className={`w-full h-full rounded-full transition-all duration-300 ${
@@ -610,8 +622,8 @@ function App() {
             <nav className="hidden md:flex items-center space-x-1">
               {[
                 { name: 'Features', href: '#features' },
-                { name: 'Testimonials', href: '#testimonials' },
                 { name: 'Gallery', href: '#gallery' },
+                { name: 'Testimonials', href: '#testimonials' },
                 { name: 'Download', href: '#download' }
               ].map((item) => (
                 <a 
@@ -691,8 +703,8 @@ function App() {
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
               {[
                 { name: 'Features', href: '#features' },
-                { name: 'Testimonials', href: '#testimonials' },
                 { name: 'Gallery', href: '#gallery' },
+                { name: 'Testimonials', href: '#testimonials' },
                 { name: 'Download', href: '#download' }
               ].map((item) => (
                 <a 
