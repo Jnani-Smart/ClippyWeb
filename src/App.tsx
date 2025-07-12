@@ -933,7 +933,7 @@ function App() {
       </header>
 
       {/* Hero Section - Redesigned */}
-      <section ref={heroRef} id="hero" className={`relative z-10 pt-16 pb-16 px-6 sm:px-8 lg:px-12 transition-all duration-700 ${isMobile ? (visibleMobileSections.has('hero') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8') : ''}`}>
+      <section ref={heroRef} id="hero" className={`relative z-10 pt-16 pb-16 px-6 sm:px-8 lg:px-12 transition-all duration-400 ease-[cubic-bezier(0.4,0,0.2,1)] ${isMobile ? (visibleMobileSections.has('hero') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8') : ''}`}>
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <div className={`transition-all duration-1200 ${isVisible && launchAnimationComplete ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}>
@@ -1044,7 +1044,7 @@ function App() {
       </section>
 
       {/* Detailed Features Section */}
-      <section ref={featuresRef} id="features" className={`relative z-10 py-16 px-6 sm:px-8 lg:px-12 transition-all duration-700 ${isMobile ? (visibleMobileSections.has('features') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8') : ''}`}>
+      <section ref={featuresRef} id="features" className={`relative z-10 py-16 px-6 sm:px-8 lg:px-12 transition-all duration-400 ease-[cubic-bezier(0.4,0,0.2,1)] ${isMobile ? (visibleMobileSections.has('features') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8') : ''}`}>
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-black mb-6 tracking-tight font-display">
@@ -1137,7 +1137,7 @@ function App() {
       </section>
 
       {/* Gallery Section */}
-      <section ref={galleryRef} id="gallery" className={`relative z-10 py-12 sm:py-16 px-4 sm:px-6 lg:px-12 overscroll-contain transition-all duration-700 ${isMobile ? (visibleMobileSections.has('gallery') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8') : ''}`}>
+      <section ref={galleryRef} id="gallery" className={`relative z-10 py-12 sm:py-16 px-4 sm:px-6 lg:px-12 overscroll-contain transition-all duration-400 ease-[cubic-bezier(0.4,0,0.2,1)] ${isMobile ? (visibleMobileSections.has('gallery') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8') : ''}`}>
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12 sm:mb-16">
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black mb-4 tracking-tight font-display">
@@ -1298,7 +1298,7 @@ function App() {
       </section>
 
       {/* Testimonials Section */}
-      <section ref={sectionRefs.testimonials} id="testimonials" className={`relative z-10 py-16 px-6 sm:px-8 lg:px-12 transition-all duration-700 ${isMobile ? (visibleMobileSections.has('testimonials') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8') : ''}`}>
+      <section ref={sectionRefs.testimonials} id="testimonials" className={`relative z-10 py-16 px-6 sm:px-8 lg:px-12 transition-all duration-400 ease-[cubic-bezier(0.4,0,0.2,1)] ${isMobile ? (visibleMobileSections.has('testimonials') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8') : ''}`}>
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-black mb-4 tracking-tight font-display">
@@ -1348,7 +1348,7 @@ function App() {
       </section>
 
       {/* Download Section */}
-      <section ref={downloadRef} id="download" className={`relative z-10 py-16 px-6 sm:px-8 lg:px-12 transition-all duration-700 ${isMobile ? (visibleMobileSections.has('download') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8') : ''}`}>
+      <section ref={downloadRef} id="download" className={`relative z-10 py-16 px-6 sm:px-8 lg:px-12 transition-all duration-400 ease-[cubic-bezier(0.4,0,0.2,1)] ${isMobile ? (visibleMobileSections.has('download') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8') : ''}`}>
         <div className="max-w-5xl mx-auto">
           <div className="relative backdrop-blur-2xl bg-gradient-to-br from-white/12 to-white/6 border border-white/15 rounded-2xl sm:rounded-3xl overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-500/8 via-purple-500/6 to-cyan-500/8"></div>
