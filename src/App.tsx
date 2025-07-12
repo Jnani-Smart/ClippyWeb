@@ -63,6 +63,17 @@ function App() {
   const featuresRef = useRef<HTMLDivElement>(null);
   const galleryRef = useRef<HTMLDivElement>(null);
   const downloadRef = useRef<HTMLDivElement>(null);
+
+  // Track which main sections are in view (for mobile section reveal animation)
+  const [visibleMobileSections, setVisibleMobileSections] = useState<Set<string>>(new Set());
+  const sectionRefs = {
+    hero: heroRef,
+    features: featuresRef,
+    gallery: galleryRef,
+    testimonials: useRef<HTMLDivElement>(null),
+    download: downloadRef,
+  };
+
   const [releaseData, setReleaseData] = useState<{
     version: string;
     downloadUrl: string;
@@ -485,6 +496,35 @@ function App() {
     };
   }, [isMobile, testimonials.length]);
 
+  // Intersection Observer for section reveal animations (mobile only)
+  useEffect(() => {
+    if (!isMobile) return;
+    const observer = new window.IntersectionObserver(
+      (entries) => {
+        setVisibleMobileSections((prev) => {
+          const updated = new Set(prev);
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              updated.add(entry.target.id);
+            } else {
+              updated.delete(entry.target.id);
+            }
+          });
+          return updated;
+        });
+      },
+      { threshold: 0.15 }
+    );
+    Object.values(sectionRefs).forEach((ref) => {
+      if (ref.current) observer.observe(ref.current);
+    });
+    return () => {
+      Object.values(sectionRefs).forEach((ref) => {
+        if (ref.current) observer.unobserve(ref.current);
+      });
+    };
+  }, [isMobile]);
+
   const detailedFeatures = [
     {
       icon: Clipboard,
@@ -581,6 +621,35 @@ function App() {
   };
   const cursorSize = cursorSizeMap[hoveredElement || 'default'] || cursorSizeMap.default;
   const cursorOffset = `calc(${cursorSize} / 2)`;
+
+  // Mobile gallery swipe state
+  const touchStartX = useRef<number | null>(null);
+  const touchDeltaX = useRef<number>(0);
+
+  // Handle touch start for mobile gallery
+  const handleGalleryTouchStart = (e: React.TouchEvent) => {
+    if (!isMobile) return;
+    touchStartX.current = e.touches[0].clientX;
+    touchDeltaX.current = 0;
+  };
+
+  // Handle touch move for mobile gallery
+  const handleGalleryTouchMove = (e: React.TouchEvent) => {
+    if (!isMobile || touchStartX.current === null) return;
+    touchDeltaX.current = e.touches[0].clientX - touchStartX.current;
+  };
+
+  // Handle touch end for mobile gallery
+  const handleGalleryTouchEnd = () => {
+    if (!isMobile || touchStartX.current === null) return;
+    if (touchDeltaX.current > 40 && activeCarouselIndex > 0) {
+      setActiveCarouselIndex(activeCarouselIndex - 1);
+    } else if (touchDeltaX.current < -40 && activeCarouselIndex < 3) {
+      setActiveCarouselIndex(activeCarouselIndex + 1);
+    }
+    touchStartX.current = null;
+    touchDeltaX.current = 0;
+  };
 
   return (
     <div className="min-h-screen w-screen bg-black text-white font-inter antialiased overflow-y-auto overflow-x-hidden">
@@ -732,7 +801,8 @@ function App() {
                 <a 
                   key={item.name}
                   href={item.href} 
-                  className="relative group px-5 py-2 rounded-xl transition-all duration-300 hover:bg-white/8"
+                  aria-label={item.name}
+                  className={`relative group px-5 py-2 rounded-xl transition-all duration-300 hover:bg-white/8${isMobile ? ' pressed min-w-[44px] min-h-[44px]' : ''}`}
                   onMouseEnter={() => handleSetHovered('link')}
                   onMouseLeave={() => handleSetHovered(null)}
                 >
@@ -747,7 +817,8 @@ function App() {
                   href="https://github.com/Jnani-Smart/Clippy" 
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="relative group p-2 rounded-xl transition-all duration-300 hover:bg-white/8"
+                  aria-label="View on GitHub"
+                  className={`relative group p-2 rounded-xl transition-all duration-300 hover:bg-white/8${isMobile ? ' pressed min-w-[44px] min-h-[44px]' : ''}`}
                   onMouseEnter={() => handleSetHovered('link')}
                   onMouseLeave={() => handleSetHovered(null)}
                   title="View on GitHub"
@@ -760,7 +831,8 @@ function App() {
                   href="https://github.com/Jnani-Smart/Clippy/releases" 
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="relative group p-2 rounded-xl transition-all duration-300 hover:bg-white/8"
+                  aria-label="Releases"
+                  className={`relative group p-2 rounded-xl transition-all duration-300 hover:bg-white/8${isMobile ? ' pressed min-w-[44px] min-h-[44px]' : ''}`}
                   onMouseEnter={() => handleSetHovered('link')}
                   onMouseLeave={() => handleSetHovered(null)}
                   title="Releases"
@@ -773,7 +845,8 @@ function App() {
                   href="https://github.com/Jnani-Smart/Clippy/issues" 
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="relative group p-2 rounded-xl transition-all duration-300 hover:bg-white/8"
+                  aria-label="Support"
+                  className={`relative group p-2 rounded-xl transition-all duration-300 hover:bg-white/8${isMobile ? ' pressed min-w-[44px] min-h-[44px]' : ''}`}
                   onMouseEnter={() => handleSetHovered('link')}
                   onMouseLeave={() => handleSetHovered(null)}
                   title="Support"
@@ -802,61 +875,69 @@ function App() {
         </div>
 
         {isMenuOpen && (
-          <div className="md:hidden">
-            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-              {[
-                { name: 'Features', href: '#features' },
-                { name: 'Gallery', href: '#gallery' },
-                { name: 'Testimonials', href: '#testimonials' },
-                { name: 'Download', href: '#download' }
-              ].map((item) => (
-                <a 
-                  key={item.name}
-                  href={item.href} 
-                  onClick={() => setIsMenuOpen(false)}
-                  className="block px-3 py-2 rounded-md text-base font-medium text-white/90 hover:text-white hover:bg-white/10"
-                >
-                  {item.name}
-                </a>
-              ))}
-            </div>
-            <div className="pt-4 pb-3 border-t border-white/10">
-              <div className="flex items-center justify-center px-5 space-x-4">
-                <a 
-                  href="https://github.com/Jnani-Smart/Clippy" 
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-2 rounded-md text-white/70 hover:text-white hover:bg-white/10"
-                  title="View on GitHub"
-                >
-                  <Github className="w-6 h-6" />
-                </a>
-                <a 
-                  href="https://github.com/Jnani-Smart/Clippy/releases" 
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-2 rounded-md text-white/70 hover:text-white hover:bg-white/10"
-                  title="Releases"
-                >
-                  <GitBranch className="w-6 h-6" />
-                </a>
-                <a 
-                  href="https://github.com/Jnani-Smart/Clippy/issues" 
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-2 rounded-md text-white/70 hover:text-white hover:bg-white/10"
-                  title="Support"
-                >
-                  <HelpCircle className="w-6 h-6" />
-                </a>
+          <>
+            {/* Overlay for mobile nav */}
+            <div className="mobile-nav-overlay" onClick={() => setIsMenuOpen(false)}></div>
+            <div className="md:hidden slide-down-menu" style={{ zIndex: 40, position: 'fixed', top: 0, left: 0, right: 0 }}>
+              <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                {[
+                  { name: 'Features', href: '#features' },
+                  { name: 'Gallery', href: '#gallery' },
+                  { name: 'Testimonials', href: '#testimonials' },
+                  { name: 'Download', href: '#download' }
+                ].map((item) => (
+                  <a 
+                    key={item.name}
+                    href={item.href} 
+                    aria-label={item.name}
+                    onClick={() => setIsMenuOpen(false)}
+                    className="block px-3 py-2 rounded-md text-base font-medium text-white/90 hover:text-white hover:bg-white/10 pressed min-w-[44px] min-h-[44px]"
+                  >
+                    {item.name}
+                  </a>
+                ))}
+              </div>
+              <div className="pt-4 pb-3 border-t border-white/10">
+                <div className="flex items-center justify-center px-5 space-x-4">
+                  <a 
+                    href="https://github.com/Jnani-Smart/Clippy" 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="View on GitHub"
+                    className="p-2 rounded-md text-white/70 hover:text-white hover:bg-white/10 pressed min-w-[44px] min-h-[44px]"
+                    title="View on GitHub"
+                  >
+                    <Github className="w-6 h-6" />
+                  </a>
+                  <a 
+                    href="https://github.com/Jnani-Smart/Clippy/releases" 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Releases"
+                    className="p-2 rounded-md text-white/70 hover:text-white hover:bg-white/10 pressed min-w-[44px] min-h-[44px]"
+                    title="Releases"
+                  >
+                    <GitBranch className="w-6 h-6" />
+                  </a>
+                  <a 
+                    href="https://github.com/Jnani-Smart/Clippy/issues" 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Support"
+                    className="p-2 rounded-md text-white/70 hover:text-white hover:bg-white/10 pressed min-w-[44px] min-h-[44px]"
+                    title="Support"
+                  >
+                    <HelpCircle className="w-6 h-6" />
+                  </a>
+                </div>
               </div>
             </div>
-          </div>
+          </>
         )}
       </header>
 
       {/* Hero Section - Redesigned */}
-      <section ref={heroRef} id="hero" className="relative z-10 pt-16 pb-16 px-6 sm:px-8 lg:px-12">
+      <section ref={heroRef} id="hero" className={`relative z-10 pt-16 pb-16 px-6 sm:px-8 lg:px-12 transition-all duration-700 ${isMobile ? (visibleMobileSections.has('hero') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8') : ''}`}>
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <div className={`transition-all duration-1200 ${isVisible && launchAnimationComplete ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}>
@@ -906,7 +987,8 @@ function App() {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <a 
                   href="#download"
-                  className="group relative px-12 py-4 bg-gradient-to-br from-white/15 to-white/8 backdrop-blur-2xl border border-white/20 rounded-2xl font-bold text-lg transition-all duration-400 hover:scale-105 hover:shadow-xl hover:bg-white/20"
+                  aria-label="Download for macOS"
+                  className={`group relative px-12 py-4 bg-gradient-to-br from-white/15 to-white/8 backdrop-blur-2xl border border-white/20 rounded-2xl font-bold text-lg transition-all duration-400 hover:scale-105 hover:shadow-xl hover:bg-white/20${isMobile ? ' tap-scale min-w-[44px] min-h-[44px]' : ''}`}
                   onMouseEnter={() => handleSetHovered('button')}
                   onMouseLeave={() => handleSetHovered(null)}
                 >
@@ -919,7 +1001,8 @@ function App() {
                 </a>
                 
                 <button 
-                  className="group px-12 py-4 backdrop-blur-2xl bg-white/8 border border-white/15 rounded-2xl font-bold text-lg transition-all duration-400 hover:bg-white/12 hover:scale-105"
+                  aria-label="Watch Demo"
+                  className={`group px-12 py-4 backdrop-blur-2xl bg-white/8 border border-white/15 rounded-2xl font-bold text-lg transition-all duration-400 hover:bg-white/12 hover:scale-105${isMobile ? ' tap-scale min-w-[44px] min-h-[44px]' : ''}`}
                   onMouseEnter={() => handleSetHovered('button')}
                   onMouseLeave={() => handleSetHovered(null)}
                 >
@@ -939,9 +1022,9 @@ function App() {
                 key={index}
                 ref={el => featureCardRefs.current[index] = el}
                 data-idx={index}
-                className={`group relative p-6 backdrop-blur-2xl bg-gradient-to-br ${feature.gradient} border border-white/12 rounded-2xl transition-all duration-500 cursor-pointer
+                className={`group relative p-6 backdrop-blur-2xl bg-gradient-to-br ${feature.gradient} border border-white/12 rounded-2xl transition-all duration-500 cursor-pointer${isMobile ? ' tap-scale' : ''}
                   ${activeFeature === index ? `ring-2 ring-white/30 ${getBorderColor(feature.accent)}` : ''}
-                  ${isMobile && visibleFeatureCards.has(index) ? 'hover:scale-105 group-hover:scale-110 group-hover:rotate-6' : ''}
+                  ${isMobile && visibleFeatureCards.has(index) ? 'hover:scale-105 group-hover:scale-110 group-hover:rotate-6 pop-in' : ''}
                   ${!isMobile ? 'hover:scale-105' : ''}
                 `}
                 onMouseEnter={() => handleSetHovered('card')}
@@ -965,7 +1048,7 @@ function App() {
       </section>
 
       {/* Detailed Features Section */}
-      <section ref={featuresRef} id="features" className="relative z-10 py-16 px-6 sm:px-8 lg:px-12">
+      <section ref={featuresRef} id="features" className={`relative z-10 py-16 px-6 sm:px-8 lg:px-12 transition-all duration-700 ${isMobile ? (visibleMobileSections.has('features') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8') : ''}`}>
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-black mb-6 tracking-tight font-display">
@@ -1028,8 +1111,8 @@ function App() {
                 key={index} 
                 ref={el => contentTypeCardRefs.current[index] = el}
                 data-idx={index}
-                className={`group relative p-6 backdrop-blur-2xl bg-gradient-to-br from-white/6 to-white/3 border border-white/12 rounded-2xl transition-all duration-500 cursor-pointer min-h-[280px] flex flex-col
-                  ${isMobile && visibleContentTypeCards.has(index) ? 'hover:scale-105 group-hover:scale-110 group-hover:rotate-6' : ''}
+                className={`group relative p-6 backdrop-blur-2xl bg-gradient-to-br from-white/6 to-white/3 border border-white/12 rounded-2xl transition-all duration-500 cursor-pointer min-h-[280px] flex flex-col${isMobile ? ' tap-scale' : ''}
+                  ${isMobile && visibleContentTypeCards.has(index) ? 'hover:scale-105 group-hover:scale-110 group-hover:rotate-6 pop-in' : ''}
                   ${!isMobile ? 'hover:scale-105' : ''}
                 `}
                 onMouseEnter={() => handleSetHovered('card')}
@@ -1058,7 +1141,7 @@ function App() {
       </section>
 
       {/* Gallery Section */}
-      <section ref={galleryRef} id="gallery" className="relative z-10 py-12 sm:py-16 px-4 sm:px-6 lg:px-12 overscroll-contain">
+      <section ref={galleryRef} id="gallery" className={`relative z-10 py-12 sm:py-16 px-4 sm:px-6 lg:px-12 overscroll-contain transition-all duration-700 ${isMobile ? (visibleMobileSections.has('gallery') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8') : ''}`}>
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12 sm:mb-16">
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black mb-4 tracking-tight font-display">
@@ -1073,12 +1156,28 @@ function App() {
             {/* Mobile-First Carousel Container */}
             <div className="block sm:hidden">
               {/* Mobile: Single Large Image Display */}
-              <div className="flex justify-center py-8">
-                <div className="relative backdrop-blur-2xl bg-gradient-to-br from-white/10 to-white/5 border border-white/20 rounded-3xl overflow-hidden shadow-xl shadow-black/30">
+              <div 
+                className="flex justify-center py-8 relative"
+                onTouchStart={handleGalleryTouchStart}
+                onTouchMove={handleGalleryTouchMove}
+                onTouchEnd={handleGalleryTouchEnd}
+              >
+                {/* Peek previous image */}
+                {activeCarouselIndex > 0 && (
+                  <img
+                    src={`/Assets/${activeCarouselIndex}.png`}
+                    alt="Peek Previous"
+                    className="w-20 h-32 object-cover rounded-2xl absolute left-0 top-1/2 -translate-y-1/2 opacity-50 scale-90 z-0 pointer-events-none transition-all duration-300"
+                    style={{ left: '0.5rem' }}
+                  />
+                )}
+                {/* Main image */}
+                <div className="relative backdrop-blur-2xl bg-gradient-to-br from-white/10 to-white/5 border border-white/20 rounded-3xl overflow-hidden shadow-xl shadow-black/30 z-10">
                   <img
                     src={`/Assets/${activeCarouselIndex + 1}.png`}
                     alt={`Clippy Interface ${activeCarouselIndex + 1}`}
-                    className="w-80 h-auto object-cover rounded-3xl"
+                    className="w-80 h-auto object-cover rounded-3xl select-none"
+                    draggable={false}
                   />
                   
                   {/* Mobile gradient overlay */}
@@ -1091,6 +1190,15 @@ function App() {
                     </div>
                   </div>
                 </div>
+                {/* Peek next image */}
+                {activeCarouselIndex < 3 && (
+                  <img
+                    src={`/Assets/${activeCarouselIndex + 2}.png`}
+                    alt="Peek Next"
+                    className="w-20 h-32 object-cover rounded-2xl absolute right-0 top-1/2 -translate-y-1/2 opacity-50 scale-90 z-0 pointer-events-none transition-all duration-300"
+                    style={{ right: '0.5rem' }}
+                  />
+                )}
               </div>
               
               {/* Mobile: Thumbnail Strip */}
@@ -1194,7 +1302,7 @@ function App() {
       </section>
 
       {/* Testimonials Section */}
-      <section id="testimonials" className="relative z-10 py-16 px-6 sm:px-8 lg:px-12">
+      <section ref={sectionRefs.testimonials} id="testimonials" className={`relative z-10 py-16 px-6 sm:px-8 lg:px-12 transition-all duration-700 ${isMobile ? (visibleMobileSections.has('testimonials') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8') : ''}`}>
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-black mb-4 tracking-tight font-display">
@@ -1211,8 +1319,8 @@ function App() {
                 key={index}
                 ref={el => testimonialCardRefs.current[index] = el}
                 data-idx={index}
-                className={`group relative p-6 backdrop-blur-2xl bg-gradient-to-br from-white/8 to-white/4 border border-white/15 rounded-2xl transition-all duration-500 cursor-pointer
-                  ${isMobile && visibleTestimonialCards.has(index) ? 'hover:scale-105 group-hover:scale-110 group-hover:rotate-6' : ''}
+                className={`group relative p-6 backdrop-blur-2xl bg-gradient-to-br from-white/8 to-white/4 border border-white/15 rounded-2xl transition-all duration-500 cursor-pointer${isMobile ? ' tap-scale' : ''}
+                  ${isMobile && visibleTestimonialCards.has(index) ? 'hover:scale-105 group-hover:scale-110 group-hover:rotate-6 pop-in' : ''}
                   ${!isMobile ? 'hover:scale-105' : ''}
                 `}
                 onMouseEnter={() => handleSetHovered('card')}
@@ -1244,7 +1352,7 @@ function App() {
       </section>
 
       {/* Download Section */}
-      <section ref={downloadRef} id="download" className="relative z-10 py-8 sm:py-16 px-4 sm:px-8 lg:px-12">
+      <section ref={downloadRef} id="download" className={`relative z-10 py-16 px-6 sm:px-8 lg:px-12 transition-all duration-700 ${isMobile ? (visibleMobileSections.has('download') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8') : ''}`}>
         <div className="max-w-5xl mx-auto">
           <div className="relative backdrop-blur-2xl bg-gradient-to-br from-white/12 to-white/6 border border-white/15 rounded-2xl sm:rounded-3xl overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-500/8 via-purple-500/6 to-cyan-500/8"></div>
