@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { 
   Command, 
   Search, 
@@ -44,6 +44,13 @@ function App() {
   // Intersection observer states for scroll animations
   const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set());
   
+  // Track which feature cards are in view (for mobile scroll animation)
+  const [visibleFeatureCards, setVisibleFeatureCards] = useState<Set<number>>(new Set());
+  const featureCardRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  // Helper to detect mobile
+  const isMobile = typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches;
+
   const heroRef = useRef<HTMLDivElement>(null);
   const featuresRef = useRef<HTMLDivElement>(null);
   const galleryRef = useRef<HTMLDivElement>(null);
@@ -63,6 +70,37 @@ function App() {
     isLoading: true,
     error: null
   });
+
+  const features = [
+    {
+      icon: Command,
+      title: "Instant Access",
+      description: "Summon Clippy with ⌘+⇧+V from anywhere on your Mac",
+      gradient: "from-blue-500/20 via-cyan-500/15 to-blue-600/20",
+      accent: "blue"
+    },
+    {
+      icon: Search,
+      title: "Intelligent Search",
+      description: "Find any clipboard item with lightning-fast fuzzy search",
+      gradient: "from-purple-500/20 via-violet-500/15 to-purple-600/20",
+      accent: "purple"
+    },
+    {
+      icon: Pin,
+      title: "Smart Pinning",
+      description: "Keep your most important clips always within reach",
+      gradient: "from-emerald-500/20 via-green-500/15 to-emerald-600/20",
+      accent: "emerald"
+    },
+    {
+      icon: Filter,
+      title: "Advanced Filtering",
+      description: "Organize by content type with intelligent categorization",
+      gradient: "from-orange-500/20 via-amber-500/15 to-orange-600/20",
+      accent: "orange"
+    }
+  ];
 
   // App ready check - ensure all resources are loaded
   useEffect(() => {
@@ -290,36 +328,35 @@ function App() {
     };
   }, []);
 
-  const features = [
-    {
-      icon: Command,
-      title: "Instant Access",
-      description: "Summon Clippy with ⌘+⇧+V from anywhere on your Mac",
-      gradient: "from-blue-500/20 via-cyan-500/15 to-blue-600/20",
-      accent: "blue"
-    },
-    {
-      icon: Search,
-      title: "Intelligent Search",
-      description: "Find any clipboard item with lightning-fast fuzzy search",
-      gradient: "from-purple-500/20 via-violet-500/15 to-purple-600/20",
-      accent: "purple"
-    },
-    {
-      icon: Pin,
-      title: "Smart Pinning",
-      description: "Keep your most important clips always within reach",
-      gradient: "from-emerald-500/20 via-green-500/15 to-emerald-600/20",
-      accent: "emerald"
-    },
-    {
-      icon: Filter,
-      title: "Advanced Filtering",
-      description: "Organize by content type with intelligent categorization",
-      gradient: "from-orange-500/20 via-amber-500/15 to-orange-600/20",
-      accent: "orange"
-    }
-  ];
+  // Intersection Observer for feature cards (mobile scroll animation)
+  useEffect(() => {
+    if (!isMobile) return;
+    const observer = new window.IntersectionObserver(
+      (entries) => {
+        setVisibleFeatureCards((prev) => {
+          const updated = new Set(prev);
+          entries.forEach((entry) => {
+            const idx = Number((entry.target as HTMLElement).dataset.idx);
+            if (entry.isIntersecting) {
+              updated.add(idx);
+            } else {
+              updated.delete(idx);
+            }
+          });
+          return updated;
+        });
+      },
+      { threshold: 0.3 }
+    );
+    featureCardRefs.current.forEach((ref) => {
+      if (ref) observer.observe(ref);
+    });
+    return () => {
+      featureCardRefs.current.forEach((ref) => {
+        if (ref) observer.unobserve(ref);
+      });
+    };
+  }, [isMobile, features.length]);
 
   const detailedFeatures = [
     {
@@ -834,15 +871,22 @@ function App() {
             {features.map((feature, index) => (
               <div
                 key={index}
-                className={`group relative p-6 backdrop-blur-2xl bg-gradient-to-br ${feature.gradient} border border-white/12 rounded-2xl transition-all duration-500 hover:scale-105 cursor-pointer ${
-                  activeFeature === index ? `ring-2 ring-white/30 ${getBorderColor(feature.accent)}` : ''
-                }`}
+                ref={el => featureCardRefs.current[index] = el}
+                data-idx={index}
+                className={`group relative p-6 backdrop-blur-2xl bg-gradient-to-br ${feature.gradient} border border-white/12 rounded-2xl transition-all duration-500 cursor-pointer
+                  ${activeFeature === index ? `ring-2 ring-white/30 ${getBorderColor(feature.accent)}` : ''}
+                  ${isMobile && visibleFeatureCards.has(index) ? 'hover:scale-105 group-hover:scale-110 group-hover:rotate-6' : ''}
+                  ${!isMobile ? 'hover:scale-105' : ''}
+                `}
                 onMouseEnter={() => handleSetHovered('card')}
                 onMouseLeave={() => handleSetHovered(null)}
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-white/8 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <div className="relative z-10">
-                  <div className="w-16 h-16 bg-gradient-to-br from-white/20 to-white/8 backdrop-blur-2xl border border-white/25 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+                  <div className={`w-16 h-16 bg-gradient-to-br from-white/20 to-white/8 backdrop-blur-2xl border border-white/25 rounded-2xl flex items-center justify-center mb-6 transition-all duration-300
+                    ${isMobile && visibleFeatureCards.has(index) ? 'scale-110 rotate-6' : ''}
+                    ${!isMobile ? 'group-hover:scale-110 group-hover:rotate-6' : ''}
+                  `}>
                     <feature.icon className="w-8 h-8 text-white" />
                   </div>
                   <h3 className="text-xl font-bold mb-3 text-white">{feature.title}</h3>
