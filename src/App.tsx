@@ -48,6 +48,14 @@ function App() {
   const [visibleFeatureCards, setVisibleFeatureCards] = useState<Set<number>>(new Set());
   const featureCardRefs = useRef<(HTMLDivElement | null)[]>([]);
 
+  // Track which content type cards are in view (for mobile scroll animation)
+  const [visibleContentTypeCards, setVisibleContentTypeCards] = useState<Set<number>>(new Set());
+  const contentTypeCardRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  // Track which testimonial cards are in view (for mobile scroll animation)
+  const [visibleTestimonialCards, setVisibleTestimonialCards] = useState<Set<number>>(new Set());
+  const testimonialCardRefs = useRef<(HTMLDivElement | null)[]>([]);
+
   // Helper to detect mobile
   const isMobile = typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches;
 
@@ -99,6 +107,65 @@ function App() {
       description: "Organize by content type with intelligent categorization",
       gradient: "from-orange-500/20 via-amber-500/15 to-orange-600/20",
       accent: "orange"
+    }
+  ];
+
+  const contentTypes = [
+    { 
+      icon: FileText, 
+      title: "Rich Text", 
+      description: "Plain text, formatted content, and rich media with full styling preservation across devices",
+      color: "emerald",
+      stats: "Perfect Formatting",
+      usage: "85%"
+    },
+    { 
+      icon: Code, 
+      title: "Code Snippets", 
+      description: "Syntax highlighting for 200+ programming languages with intelligent code detection",
+      color: "purple",
+      stats: "200+ Languages",
+      usage: "65%"
+    },
+    { 
+      icon: Link, 
+      title: "Smart URLs", 
+      description: "Store and organize URLs with quick preview options when you need to check content",
+      color: "blue",
+      stats: "Quick Preview",
+      usage: "78%"
+    },
+    { 
+      icon: Image, 
+      title: "Visual Content", 
+      description: "Screenshots, images, and visual assets with quick preview and easy access",
+      color: "orange",
+      stats: "Any Format",
+      usage: "45%"
+    }
+  ];
+
+  const testimonials = [
+    {
+      name: "Saran Kathiravan",
+      role: "Senior Developer at Apple",
+      content: "Clippy has revolutionized my development workflow. The VisionOS-inspired interface is absolutely stunning.",
+      rating: 5,
+      avatar: "SK"
+    },
+    {
+      name: "Khyathi Jain",
+      role: "Design Lead at Figma",
+      content: "The attention to detail in Clippy's interface is incredible. It feels like a native Apple application.",
+      rating: 5,
+      avatar: "KJ"
+    },
+    {
+      name: "Srikar K",
+      role: "Product Manager at Stripe",
+      content: "I can't imagine working without Clippy now. It's become an essential part of my daily workflow.",
+      rating: 5,
+      avatar: "SR"
     }
   ];
 
@@ -358,6 +425,66 @@ function App() {
     };
   }, [isMobile, features.length]);
 
+  // Intersection Observer for content type cards (mobile scroll animation)
+  useEffect(() => {
+    if (!isMobile) return;
+    const observer = new window.IntersectionObserver(
+      (entries) => {
+        setVisibleContentTypeCards((prev) => {
+          const updated = new Set(prev);
+          entries.forEach((entry) => {
+            const idx = Number((entry.target as HTMLElement).dataset.idx);
+            if (entry.isIntersecting) {
+              updated.add(idx);
+            } else {
+              updated.delete(idx);
+            }
+          });
+          return updated;
+        });
+      },
+      { threshold: 0.3 }
+    );
+    contentTypeCardRefs.current.forEach((ref) => {
+      if (ref) observer.observe(ref);
+    });
+    return () => {
+      contentTypeCardRefs.current.forEach((ref) => {
+        if (ref) observer.unobserve(ref);
+      });
+    };
+  }, [isMobile, contentTypes.length]);
+
+  // Intersection Observer for testimonial cards (mobile scroll animation)
+  useEffect(() => {
+    if (!isMobile) return;
+    const observer = new window.IntersectionObserver(
+      (entries) => {
+        setVisibleTestimonialCards((prev) => {
+          const updated = new Set(prev);
+          entries.forEach((entry) => {
+            const idx = Number((entry.target as HTMLElement).dataset.idx);
+            if (entry.isIntersecting) {
+              updated.add(idx);
+            } else {
+              updated.delete(idx);
+            }
+          });
+          return updated;
+        });
+      },
+      { threshold: 0.3 }
+    );
+    testimonialCardRefs.current.forEach((ref) => {
+      if (ref) observer.observe(ref);
+    });
+    return () => {
+      testimonialCardRefs.current.forEach((ref) => {
+        if (ref) observer.unobserve(ref);
+      });
+    };
+  }, [isMobile, testimonials.length]);
+
   const detailedFeatures = [
     {
       icon: Clipboard,
@@ -408,67 +535,6 @@ function App() {
       stats: "50+ Settings"
     }
   ];
-
-  const contentTypes = [
-    { 
-      icon: FileText, 
-      title: "Rich Text", 
-      description: "Plain text, formatted content, and rich media with full styling preservation across devices",
-      color: "emerald",
-      stats: "Perfect Formatting",
-      usage: "85%"
-    },
-    { 
-      icon: Code, 
-      title: "Code Snippets", 
-      description: "Syntax highlighting for 200+ programming languages with intelligent code detection",
-      color: "purple",
-      stats: "200+ Languages",
-      usage: "65%"
-    },
-    { 
-      icon: Link, 
-      title: "Smart URLs", 
-      description: "Store and organize URLs with quick preview options when you need to check content",
-      color: "blue",
-      stats: "Quick Preview",
-      usage: "78%"
-    },
-    { 
-      icon: Image, 
-      title: "Visual Content", 
-      description: "Screenshots, images, and visual assets with quick preview and easy access",
-      color: "orange",
-      stats: "Any Format",
-      usage: "45%"
-    }
-  ];
-
-  const testimonials = [
-    {
-      name: "Saran Kathiravan",
-      role: "Senior Developer at Apple",
-      content: "Clippy has revolutionized my development workflow. The VisionOS-inspired interface is absolutely stunning.",
-      rating: 5,
-      avatar: "SK"
-    },
-    {
-      name: "Khyathi Jain",
-      role: "Design Lead at Figma",
-      content: "The attention to detail in Clippy's interface is incredible. It feels like a native Apple application.",
-      rating: 5,
-      avatar: "KJ"
-    },
-    {
-      name: "Srikar K",
-      role: "Product Manager at Stripe",
-      content: "I can't imagine working without Clippy now. It's become an essential part of my daily workflow.",
-      rating: 5,
-      avatar: "SR"
-    }
-  ];
-
-  // Stats removed
 
   const getAccentColor = (accent: string) => {
     const colors = {
@@ -960,18 +1026,25 @@ function App() {
             {contentTypes.map((type, index) => (
               <div 
                 key={index} 
-                className="group relative p-6 backdrop-blur-2xl bg-gradient-to-br from-white/6 to-white/3 border border-white/12 rounded-2xl transition-all duration-500 hover:scale-105 cursor-pointer min-h-[280px] flex flex-col"
+                ref={el => contentTypeCardRefs.current[index] = el}
+                data-idx={index}
+                className={`group relative p-6 backdrop-blur-2xl bg-gradient-to-br from-white/6 to-white/3 border border-white/12 rounded-2xl transition-all duration-500 cursor-pointer min-h-[280px] flex flex-col
+                  ${isMobile && visibleContentTypeCards.has(index) ? 'hover:scale-105 group-hover:scale-110 group-hover:rotate-6' : ''}
+                  ${!isMobile ? 'hover:scale-105' : ''}
+                `}
                 onMouseEnter={() => handleSetHovered('card')}
                 onMouseLeave={() => handleSetHovered(null)}
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-white/12 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-400"></div>
                 <div className="relative z-10 text-center flex-1 flex flex-col">
-                  <div className="w-16 h-16 bg-gradient-to-br from-white/20 to-white/8 backdrop-blur-2xl border border-white/25 rounded-2xl flex items-center justify-center mb-6 mx-auto group-hover:scale-110 group-hover:rotate-6 transition-all duration-400">
+                  <div className={`w-16 h-16 bg-gradient-to-br from-white/20 to-white/8 backdrop-blur-2xl border border-white/25 rounded-2xl flex items-center justify-center mb-6 mx-auto transition-all duration-400
+                    ${isMobile && visibleContentTypeCards.has(index) ? 'scale-110 rotate-6' : ''}
+                    ${!isMobile ? 'group-hover:scale-110 group-hover:rotate-6' : ''}
+                  `}>
                     <type.icon className="w-8 h-8 text-white" />
                   </div>
                   <h3 className="text-lg font-bold text-white mb-3">{type.title}</h3>
                   <p className="text-white/70 text-sm mb-4 leading-relaxed flex-1">{type.description}</p>
-                  
                   <div className="space-y-2 mt-auto">
                     <div className={`inline-block px-3 py-1 rounded-xl text-xs font-bold ${getAccentColor(type.color)} bg-white/8 border border-white/15`}>
                       {type.stats}
@@ -1136,7 +1209,12 @@ function App() {
             {testimonials.map((testimonial, index) => (
               <div
                 key={index}
-                className="group relative p-6 backdrop-blur-2xl bg-gradient-to-br from-white/8 to-white/4 border border-white/15 rounded-2xl transition-all duration-500 hover:scale-105 cursor-pointer"
+                ref={el => testimonialCardRefs.current[index] = el}
+                data-idx={index}
+                className={`group relative p-6 backdrop-blur-2xl bg-gradient-to-br from-white/8 to-white/4 border border-white/15 rounded-2xl transition-all duration-500 cursor-pointer
+                  ${isMobile && visibleTestimonialCards.has(index) ? 'hover:scale-105 group-hover:scale-110 group-hover:rotate-6' : ''}
+                  ${!isMobile ? 'hover:scale-105' : ''}
+                `}
                 onMouseEnter={() => handleSetHovered('card')}
                 onMouseLeave={() => handleSetHovered(null)}
               >
@@ -1147,11 +1225,9 @@ function App() {
                       <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
                     ))}
                   </div>
-                  
                   <p className="text-white/90 text-base leading-relaxed mb-6 font-light">
                     "{testimonial.content}"
                   </p>
-                  
                   <div className="flex items-center space-x-3">
                     <div className="w-12 h-12 bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-2xl border border-white/25 rounded-xl flex items-center justify-center">
                       <span className="text-white font-bold text-sm">{testimonial.avatar}</span>
