@@ -973,7 +973,7 @@ function App() {
           </div>
 
           {/* Quick Features Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
             {features.map((feature, index) => (
               <div
                 key={index}
@@ -1005,7 +1005,7 @@ function App() {
       </section>
 
       {/* Detailed Features Section */}
-      <section ref={featuresRef} id="features" className="relative z-10 py-16 px-6 sm:px-8 lg:px-12">
+      <section ref={featuresRef} id="features" className="relative z-10 py-12 px-6 sm:px-8 lg:px-12">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-black mb-6 tracking-tight font-display">
