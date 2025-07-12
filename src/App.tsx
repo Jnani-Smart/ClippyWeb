@@ -875,64 +875,60 @@ function App() {
         </div>
 
         {isMenuOpen && (
-          <>
-            {/* Overlay for mobile nav */}
-            <div className="mobile-nav-overlay" onClick={() => setIsMenuOpen(false)}></div>
-            <div className="md:hidden slide-down-menu" style={{ zIndex: 40, position: 'fixed', top: 0, left: 0, right: 0 }}>
-              <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                {[
-                  { name: 'Features', href: '#features' },
-                  { name: 'Gallery', href: '#gallery' },
-                  { name: 'Testimonials', href: '#testimonials' },
-                  { name: 'Download', href: '#download' }
-                ].map((item) => (
-                  <a 
-                    key={item.name}
-                    href={item.href} 
-                    aria-label={item.name}
-                    onClick={() => setIsMenuOpen(false)}
-                    className="block px-3 py-2 rounded-md text-base font-medium text-white/90 hover:text-white hover:bg-white/10 pressed min-w-[44px] min-h-[44px]"
-                  >
-                    {item.name}
-                  </a>
-                ))}
-              </div>
-              <div className="pt-4 pb-3 border-t border-white/10">
-                <div className="flex items-center justify-center px-5 space-x-4">
-                  <a 
-                    href="https://github.com/Jnani-Smart/Clippy" 
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label="View on GitHub"
-                    className="p-2 rounded-md text-white/70 hover:text-white hover:bg-white/10 pressed min-w-[44px] min-h-[44px]"
-                    title="View on GitHub"
-                  >
-                    <Github className="w-6 h-6" />
-                  </a>
-                  <a 
-                    href="https://github.com/Jnani-Smart/Clippy/releases" 
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label="Releases"
-                    className="p-2 rounded-md text-white/70 hover:text-white hover:bg-white/10 pressed min-w-[44px] min-h-[44px]"
-                    title="Releases"
-                  >
-                    <GitBranch className="w-6 h-6" />
-                  </a>
-                  <a 
-                    href="https://github.com/Jnani-Smart/Clippy/issues" 
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label="Support"
-                    className="p-2 rounded-md text-white/70 hover:text-white hover:bg-white/10 pressed min-w-[44px] min-h-[44px]"
-                    title="Support"
-                  >
-                    <HelpCircle className="w-6 h-6" />
-                  </a>
-                </div>
+          <div className="md:hidden">
+            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+              {[
+                { name: 'Features', href: '#features' },
+                { name: 'Gallery', href: '#gallery' },
+                { name: 'Testimonials', href: '#testimonials' },
+                { name: 'Download', href: '#download' }
+              ].map((item) => (
+                <a 
+                  key={item.name}
+                  href={item.href} 
+                  aria-label={item.name}
+                  onClick={() => setIsMenuOpen(false)}
+                  className="block px-3 py-2 rounded-md text-base font-medium text-white/90 hover:text-white hover:bg-white/10"
+                >
+                  {item.name}
+                </a>
+              ))}
+            </div>
+            <div className="pt-4 pb-3 border-t border-white/10">
+              <div className="flex items-center justify-center px-5 space-x-4">
+                <a 
+                  href="https://github.com/Jnani-Smart/Clippy" 
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="View on GitHub"
+                  className="p-2 rounded-md text-white/70 hover:text-white hover:bg-white/10"
+                  title="View on GitHub"
+                >
+                  <Github className="w-6 h-6" />
+                </a>
+                <a 
+                  href="https://github.com/Jnani-Smart/Clippy/releases" 
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Releases"
+                  className="p-2 rounded-md text-white/70 hover:text-white hover:bg-white/10"
+                  title="Releases"
+                >
+                  <GitBranch className="w-6 h-6" />
+                </a>
+                <a 
+                  href="https://github.com/Jnani-Smart/Clippy/issues" 
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Support"
+                  className="p-2 rounded-md text-white/70 hover:text-white hover:bg-white/10"
+                  title="Support"
+                >
+                  <HelpCircle className="w-6 h-6" />
+                </a>
               </div>
             </div>
-          </>
+          </div>
         )}
       </header>
 
@@ -988,7 +984,7 @@ function App() {
                 <a 
                   href="#download"
                   aria-label="Download for macOS"
-                  className={`group relative px-12 py-4 bg-gradient-to-br from-white/15 to-white/8 backdrop-blur-2xl border border-white/20 rounded-2xl font-bold text-lg transition-all duration-400 hover:scale-105 hover:shadow-xl hover:bg-white/20${isMobile ? ' tap-scale min-w-[44px] min-h-[44px]' : ''}`}
+                  className={`group relative px-12 py-4 bg-gradient-to-br from-white/15 to-white/8 backdrop-blur-2xl border border-white/20 rounded-2xl font-bold text-lg transition-all duration-400 hover:scale-105 hover:shadow-xl hover:bg-white/20`}
                   onMouseEnter={() => handleSetHovered('button')}
                   onMouseLeave={() => handleSetHovered(null)}
                 >
@@ -1002,7 +998,7 @@ function App() {
                 
                 <button 
                   aria-label="Watch Demo"
-                  className={`group px-12 py-4 backdrop-blur-2xl bg-white/8 border border-white/15 rounded-2xl font-bold text-lg transition-all duration-400 hover:bg-white/12 hover:scale-105${isMobile ? ' tap-scale min-w-[44px] min-h-[44px]' : ''}`}
+                  className={`group px-12 py-4 backdrop-blur-2xl bg-white/8 border border-white/15 rounded-2xl font-bold text-lg transition-all duration-400 hover:bg-white/12 hover:scale-105`}
                   onMouseEnter={() => handleSetHovered('button')}
                   onMouseLeave={() => handleSetHovered(null)}
                 >
@@ -1022,9 +1018,9 @@ function App() {
                 key={index}
                 ref={el => featureCardRefs.current[index] = el}
                 data-idx={index}
-                className={`group relative p-6 backdrop-blur-2xl bg-gradient-to-br ${feature.gradient} border border-white/12 rounded-2xl transition-all duration-500 cursor-pointer${isMobile ? ' tap-scale' : ''}
+                className={`group relative p-6 backdrop-blur-2xl bg-gradient-to-br ${feature.gradient} border border-white/12 rounded-2xl transition-all duration-500 cursor-pointer
                   ${activeFeature === index ? `ring-2 ring-white/30 ${getBorderColor(feature.accent)}` : ''}
-                  ${isMobile && visibleFeatureCards.has(index) ? 'hover:scale-105 group-hover:scale-110 group-hover:rotate-6 pop-in' : ''}
+                  ${isMobile && visibleFeatureCards.has(index) ? 'hover:scale-105 group-hover:scale-110 group-hover:rotate-6' : ''}
                   ${!isMobile ? 'hover:scale-105' : ''}
                 `}
                 onMouseEnter={() => handleSetHovered('card')}
@@ -1111,8 +1107,8 @@ function App() {
                 key={index} 
                 ref={el => contentTypeCardRefs.current[index] = el}
                 data-idx={index}
-                className={`group relative p-6 backdrop-blur-2xl bg-gradient-to-br from-white/6 to-white/3 border border-white/12 rounded-2xl transition-all duration-500 cursor-pointer min-h-[280px] flex flex-col${isMobile ? ' tap-scale' : ''}
-                  ${isMobile && visibleContentTypeCards.has(index) ? 'hover:scale-105 group-hover:scale-110 group-hover:rotate-6 pop-in' : ''}
+                className={`group relative p-6 backdrop-blur-2xl bg-gradient-to-br from-white/6 to-white/3 border border-white/12 rounded-2xl transition-all duration-500 cursor-pointer min-h-[280px] flex flex-col
+                  ${isMobile && visibleContentTypeCards.has(index) ? 'hover:scale-105 group-hover:scale-110 group-hover:rotate-6' : ''}
                   ${!isMobile ? 'hover:scale-105' : ''}
                 `}
                 onMouseEnter={() => handleSetHovered('card')}
@@ -1319,8 +1315,8 @@ function App() {
                 key={index}
                 ref={el => testimonialCardRefs.current[index] = el}
                 data-idx={index}
-                className={`group relative p-6 backdrop-blur-2xl bg-gradient-to-br from-white/8 to-white/4 border border-white/15 rounded-2xl transition-all duration-500 cursor-pointer${isMobile ? ' tap-scale' : ''}
-                  ${isMobile && visibleTestimonialCards.has(index) ? 'hover:scale-105 group-hover:scale-110 group-hover:rotate-6 pop-in' : ''}
+                className={`group relative p-6 backdrop-blur-2xl bg-gradient-to-br from-white/8 to-white/4 border border-white/15 rounded-2xl transition-all duration-500 cursor-pointer
+                  ${isMobile && visibleTestimonialCards.has(index) ? 'hover:scale-105 group-hover:scale-110 group-hover:rotate-6' : ''}
                   ${!isMobile ? 'hover:scale-105' : ''}
                 `}
                 onMouseEnter={() => handleSetHovered('card')}
