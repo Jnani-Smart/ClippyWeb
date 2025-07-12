@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
+  <channel>
+    <title>Clippy Updates</title>
+    <link>https://github.com/Jnani-Smart/Clippy/releases</link>
+    <description>Latest releases of Clippy</description>
+    <item>
+      <title>Version 1.6.0</title>
+      <description># Clippy v1.6.0 Release Notes
+
+## New Features
+
+### New App Icon
+- **Completely refreshed app icon** with improved high-resolution assets
+- **Consistent icon appearance** across all macOS contexts
+- **Enhanced asset management** throughout the application
+
+### UI Improvements
+- **More compact selection toolbar** in clipboard view
+- **Improved alignment** of UI components
+- **Enhanced visual consistency** across the app
+
+### Technical Improvements
+- **Optimized icon loading** in the About section
+- **Improved handling of macOS icon caches**
+- **Updated asset catalog** with consistent high-resolution assets
+- **Better resource management** for visual elements
+
+## Bug Fixes
+- Fixed inconsistencies with app icon appearance in various contexts
+- Resolved issues with icon caching in macOS
+- Improved reliability of app icon updates
+- Enhanced user experience with consistent visuals
+</description>
+      <pubDate>Thu, 03 Jul 2025 10:14:14 GMT</pubDate>
+      <enclosure
+        url="https://github.com/Jnani-Smart/Clippy/releases/download/v1.6.0/Clippy.dmg"
+        sparkle:version="160"
+        sparkle:shortVersionString="1.6.0"
+        length="5124928"
+        type="application/octet-stream"/>
+    </item>
+  </channel>
+</rss>

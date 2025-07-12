@@ -4,8 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "generate-appcast": "node scripts/generate-appcast.js",
     "dev": "vite",
-    "build": "vite build",
+    "build": "npm run generate-appcast && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "build:prod": "npm run lint && vite build",
