@@ -6,7 +6,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Enhanced Typography System */
+/* Performance Optimizations */
 @layer base {
   * {
     margin: 0;
@@ -24,28 +24,55 @@
     height: 100%;
     margin: 0;
     padding: 0;
-    overflow-x: hidden; /* Prevent horizontal scrolling */
-    background-color: #000; /* Match app background */
+    overflow-x: hidden;
+    background-color: #000;
+    /* Remove potentially problematic performance optimizations */
   }
   
   body {
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11', 'ss01';
     font-variant-numeric: oldstyle-nums;
     width: 100%;
-    min-height: 100%;
+    min-height: 100vh;
     margin: 0;
     padding: 0;
     overflow-x: hidden;
     overflow-y: auto;
     position: relative;
+    /* Remove potentially problematic performance optimizations */
   }
   
   #root {
     width: 100%;
-    min-height: 100%;
+    min-height: 100vh;
     margin: 0;
     padding: 0;
     position: relative;
+    /* Remove potentially problematic containment */
+  }
+
+  /* Optimize images for performance */
+  img {
+    max-width: 100%;
+    height: auto;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    transform: translateZ(0); /* Force GPU acceleration */
+  }
+
+  /* Optimize animations */
+  @media (prefers-reduced-motion: no-preference) {
+    * {
+      animation-fill-mode: both;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 }
 
