@@ -1,12 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;200;300;400;500;600;700;800&display=swap');
+/* Critical CSS - Load fonts efficiently */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Performance Optimizations */
+/* High-performance base styles */
 @layer base {
   * {
     margin: 0;
@@ -26,12 +25,10 @@
     padding: 0;
     overflow-x: hidden;
     background-color: #000;
-    /* Remove potentially problematic performance optimizations */
   }
   
   body {
-    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11', 'ss01';
-    font-variant-numeric: oldstyle-nums;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
     width: 100%;
     min-height: 100vh;
     margin: 0;
@@ -39,7 +36,6 @@
     overflow-x: hidden;
     overflow-y: auto;
     position: relative;
-    /* Remove potentially problematic performance optimizations */
   }
   
   #root {
@@ -48,25 +44,17 @@
     margin: 0;
     padding: 0;
     position: relative;
-    /* Remove potentially problematic containment */
   }
 
-  /* Optimize images for performance */
+  /* Optimized images for performance */
   img {
     max-width: 100%;
     height: auto;
     image-rendering: -webkit-optimize-contrast;
     image-rendering: crisp-edges;
-    transform: translateZ(0); /* Force GPU acceleration */
   }
 
-  /* Optimize animations */
-  @media (prefers-reduced-motion: no-preference) {
-    * {
-      animation-fill-mode: both;
-    }
-  }
-
+  /* Respect user motion preferences */
   @media (prefers-reduced-motion: reduce) {
     * {
       animation-duration: 0.01ms !important;

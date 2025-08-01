@@ -1,5 +1,5 @@
-// Service Worker for performance optimization
-const CACHE_NAME = 'clippy-web-v1';
+// High-performance Service Worker
+const CACHE_NAME = 'clippy-web-v2'; // Updated version
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -10,83 +10,90 @@ const STATIC_ASSETS = [
   '/Assets/4.png'
 ];
 
-// Install event - cache static assets
+// Fast install with parallel caching
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        console.log('Caching static assets');
+        // Use addAll for parallel caching
         return cache.addAll(STATIC_ASSETS);
       })
       .catch((error) => {
-        console.error('Failed to cache assets:', error);
+        // Silent error handling in production
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Cache install failed:', error);
+        }
       })
   );
+  // Skip waiting for immediate activation
   self.skipWaiting();
 });
 
-// Activate event - clean up old caches
+// Aggressive cache cleanup
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
-            console.log('Deleting old cache:', cacheName);
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
+    Promise.all([
+      // Clean old caches
+      caches.keys().then((cacheNames) => {
+        return Promise.all(
+          cacheNames
+            .filter(cacheName => cacheName !== CACHE_NAME)
+            .map(cacheName => caches.delete(cacheName))
+        );
+      }),
+      // Take control immediately
+      self.clients.claim()
+    ])
   );
-  self.clients.claim();
 });
 
-// Fetch event - serve from cache, fallback to network
+// Ultra-fast fetch with cache-first strategy
 self.addEventListener('fetch', (event) => {
+  const { request } = event;
+  
   // Skip non-GET requests and external URLs
-  if (event.request.method !== 'GET' || !event.request.url.startsWith(self.location.origin)) {
+  if (request.method !== 'GET' || !request.url.startsWith(self.location.origin)) {
     return;
   }
 
+  // Cache-first strategy for maximum speed
   event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        // Return cached version if available
-        if (response) {
-          return response;
+    caches.match(request)
+      .then((cachedResponse) => {
+        if (cachedResponse) {
+          return cachedResponse;
         }
 
-        // Clone the request for network fetch
-        const fetchRequest = event.request.clone();
-
-        return fetch(fetchRequest).then((response) => {
-          // Check if response is valid
-          if (!response || response.status !== 200 || response.type !== 'basic') {
+        // Network fallback with optimized error handling
+        return fetch(request)
+          .then((response) => {
+            // Only cache successful responses
+            if (response.status === 200) {
+              const responseClone = response.clone();
+              
+              // Cache images and static assets immediately
+              if (request.destination === 'image' || 
+                  request.url.includes('.png') || 
+                  request.url.includes('.jpg') || 
+                  request.url.includes('.svg') ||
+                  request.url.includes('.css') ||
+                  request.url.includes('.js')) {
+                
+                caches.open(CACHE_NAME)
+                  .then(cache => cache.put(request, responseClone))
+                  .catch(() => {}); // Silent fail
+              }
+            }
+            
             return response;
-          }
-
-          // Clone the response for caching
-          const responseToCache = response.clone();
-
-          // Cache images and static assets
-          if (event.request.destination === 'image' || 
-              event.request.url.includes('.png') || 
-              event.request.url.includes('.jpg') || 
-              event.request.url.includes('.svg')) {
-            caches.open(CACHE_NAME)
-              .then((cache) => {
-                cache.put(event.request, responseToCache);
-              });
-          }
-
-          return response;
-        }).catch(() => {
-          // Return offline fallback for navigation requests
-          if (event.request.destination === 'document') {
-            return caches.match('/index.html');
-          }
-        });
+          })
+          .catch(() => {
+            // Fast offline fallback
+            if (request.destination === 'document') {
+              return caches.match('/index.html');
+            }
+            return new Response('Offline', { status: 503 });
+          });
       })
   );
 });
