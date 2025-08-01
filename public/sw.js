@@ -1,5 +1,5 @@
 // High-performance Service Worker
-const CACHE_NAME = 'clippy-web-v2'; // Updated version
+const CACHE_NAME = 'clippy-web-v3'; // Updated version for new build
 const STATIC_ASSETS = [
   '/',
   '/index.html',
