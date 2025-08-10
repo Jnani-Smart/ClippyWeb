@@ -19,10 +19,9 @@ self.addEventListener('install', (event) => {
         return cache.addAll(STATIC_ASSETS);
       })
       .catch((error) => {
-        // Silent error handling in production
-        if (process.env.NODE_ENV === 'development') {
-          console.error('Cache install failed:', error);
-        }
+        // Avoid referencing process in SW (undefined in browsers)
+        // Optionally log only when available
+        try { console.debug && console.debug('Cache install failed:', error); } catch (_) {}
       })
   );
   // Skip waiting for immediate activation
@@ -76,6 +75,8 @@ self.addEventListener('fetch', (event) => {
                   request.url.includes('.png') || 
                   request.url.includes('.jpg') || 
                   request.url.includes('.svg') ||
+                  request.url.includes('.webp') ||
+                  request.url.includes('.avif') ||
                   request.url.includes('.css') ||
                   request.url.includes('.js')) {
                 

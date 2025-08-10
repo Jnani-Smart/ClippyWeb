@@ -5,7 +5,7 @@ export default {
     extend: {
       fontFamily: {
         'inter': ['Inter', 'system-ui', 'sans-serif'],
-       'display': ['Outfit', 'Inter', 'system-ui', 'sans-serif'],
+        'display': ['Outfit Variable', 'Outfit', 'Inter', 'system-ui', 'sans-serif'],
         'mono': ['JetBrains Mono', 'SF Mono', 'Monaco', 'monospace'],
       },
       fontSize: {

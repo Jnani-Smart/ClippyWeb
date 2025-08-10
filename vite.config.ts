@@ -24,9 +24,13 @@ export default defineConfig({
     // Optimize chunk splitting for better caching
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          icons: ['lucide-react'],
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('/lucide-react/')) return 'icons';
+            if (id.includes('/react/')) return 'vendor';
+            if (id.includes('/react-dom/')) return 'vendor';
+            return 'vendor2';
+          }
         },
         // Optimize asset naming for better caching
         assetFileNames: 'assets/[name].[hash].[ext]',

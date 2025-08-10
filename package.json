@@ -11,11 +11,13 @@
     "build:prod": "npm run lint && vite build --mode production",
     "serve": "vite preview --port 3000 --host",
     "clean": "rm -rf dist node_modules/.vite",
-    "build:analyze": "npm run build && npx vite-bundle-analyzer dist"
+    "build:analyze": "npm run build && npx vite-bundle-analyzer dist",
+    "images:optimize": "node scripts/optimize-images.mjs"
   },
   "dependencies": {
     "@fontsource/inter": "^5.2.6",
     "@fontsource/jetbrains-mono": "^5.2.6",
+    "@fontsource/outfit": "^5.2.6",
     "lucide-react": "^0.344.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
@@ -32,6 +34,7 @@
     "eslint-plugin-react-refresh": "^0.4.11",
     "globals": "^15.9.0",
     "postcss": "^8.4.35",
+    "sharp": "^0.33.5",
     "tailwindcss": "^3.4.1",
     "terser": "^5.43.1",
     "typescript": "^5.5.3",

@@ -32,12 +32,16 @@ function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeFeature, setActiveFeature] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  // Cursor refs for rAF-powered updates (no React re-renders)
+  const cursorRef = useRef<HTMLDivElement | null>(null);
+  const lastMouseXRef = useRef(0);
+  const lastMouseYRef = useRef(0);
+  const rafIdRef = useRef<number | null>(null);
   const [hoveredElement, setHoveredElement] = useState<string | null>(null);
-  const [scrollY, setScrollY] = useState(0);
   const [activeCarouselIndex, setActiveCarouselIndex] = useState(1); // Start with middle image
   const [isCarouselPaused, setIsCarouselPaused] = useState(false);
   const [showLaunchAnimation, setShowLaunchAnimation] = useState(true);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [launchAnimationComplete, setLaunchAnimationComplete] = useState(false);
   const [isAppReady, setIsAppReady] = useState(false);
   
@@ -170,6 +174,15 @@ function App() {
     }
   ];
 
+  // Detect reduced motion preference
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const update = () => setPrefersReducedMotion(mq.matches);
+    update();
+    mq.addEventListener?.('change', update);
+    return () => mq.removeEventListener?.('change', update);
+  }, []);
+
   // App ready check - ensure all resources are loaded
   useEffect(() => {
     const checkAppReady = async () => {
@@ -192,7 +205,7 @@ function App() {
       // Wait for all images to load with a minimum delay
       await Promise.all([
         Promise.all(imagePromises),
-        new Promise(resolve => setTimeout(resolve, 1000)) // Minimum 1 second
+        new Promise(resolve => setTimeout(resolve, prefersReducedMotion ? 300 : 1000))
       ]);
 
       setIsAppReady(true);
@@ -260,14 +273,52 @@ function App() {
     };
   }, [isAppReady]);
 
-  // Fetch latest release data from GitHub
+  // Fetch latest release data from GitHub with improved error handling and caching
+  // Note: Set VITE_GITHUB_TOKEN environment variable for authenticated API access
   useEffect(() => {
     const fetchLatestRelease = async () => {
       try {
-        const response = await fetch('https://api.github.com/repos/Jnani-Smart/Clippy/releases/latest');
+        // Check if we have cached data and it's not too old (cache for 1 hour)
+        const cachedData = localStorage.getItem('clippy-release-data');
+        if (cachedData) {
+          const parsed = JSON.parse(cachedData);
+          const cacheAge = Date.now() - parsed.timestamp;
+          if (cacheAge < 60 * 60 * 1000) { // 1 hour
+            setReleaseData({
+              ...parsed.data,
+              isLoading: false,
+              error: null
+            });
+            return;
+          }
+        }
+
+        // Try to fetch from GitHub API with authentication
+        const githubToken = import.meta.env.VITE_GITHUB_TOKEN;
+        const headers: HeadersInit = {
+          'Accept': 'application/vnd.github.v3+json',
+          'User-Agent': 'Clippy-Web-App'
+        };
+        
+        // Only add authorization header if token is available
+        if (githubToken) {
+          headers['Authorization'] = `token ${githubToken}`;
+        }
+        
+        const response = await fetch('https://api.github.com/repos/Jnani-Smart/Clippy/releases/latest', {
+          headers
+        });
         
         if (!response.ok) {
-          throw new Error(`GitHub API error: ${response.status}`);
+          if (response.status === 403) {
+            throw new Error('GitHub API rate limit exceeded or authentication failed. Please check your token.');
+          } else if (response.status === 401) {
+            throw new Error('GitHub authentication failed. Please check your access token.');
+          } else if (response.status === 404) {
+            throw new Error('Repository not found or access denied.');
+          } else {
+            throw new Error(`GitHub API error: ${response.status} - ${response.statusText}`);
+          }
         }
         
         const data = await response.json();
@@ -279,7 +330,7 @@ function App() {
         );
         
         if (!macAsset) {
-          throw new Error('No macOS download found');
+          throw new Error('No macOS download found in this release');
         }
         
         // Convert bytes to MB
@@ -292,20 +343,46 @@ function App() {
         const year = publishDate.getFullYear();
         const formattedDate = `${day}/${month}/${year}`;
         
-        setReleaseData({
+        const releaseInfo = {
           version: data.tag_name.replace('v', ''),
           downloadUrl: macAsset.browser_download_url,
           fileSize: `${fileSizeInMB} MB`,
           publishedAt: formattedDate,
           isLoading: false,
           error: null
-        });
+        };
+
+        // Cache the successful response
+        localStorage.setItem('clippy-release-data', JSON.stringify({
+          data: releaseInfo,
+          timestamp: Date.now()
+        }));
+
+        setReleaseData(releaseInfo);
       } catch (error) {
         console.error('Failed to fetch release data:', error);
+        
+        // Try to use cached data even if expired as fallback
+        const cachedData = localStorage.getItem('clippy-release-data');
+        if (cachedData) {
+          try {
+            const parsed = JSON.parse(cachedData);
+            setReleaseData({
+              ...parsed.data,
+              isLoading: false,
+              error: 'Using cached data due to API error'
+            });
+            return;
+          } catch (cacheError) {
+            console.error('Failed to parse cached data:', cacheError);
+          }
+        }
+
+        // Set error state with helpful message
         setReleaseData(prev => ({
           ...prev,
           isLoading: false,
-          error: error instanceof Error ? error.message : 'Unknown error'
+          error: error instanceof Error ? error.message : 'Unknown error occurred'
         }));
       }
     };
@@ -320,41 +397,49 @@ function App() {
 
     const interval = setInterval(() => {
       setActiveFeature((prev) => (prev + 1) % 4);
-    }, 4000);
+    }, prefersReducedMotion ? 6000 : 4000);
 
     // Carousel auto-scroll
     const carouselInterval = setInterval(() => {
       if (!isCarouselPaused) {
         setActiveCarouselIndex((prev) => (prev + 1) % 4);
       }
-    }, 4000);
+    }, prefersReducedMotion ? 7000 : 4000);
 
     const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
-    };
-
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
+      lastMouseXRef.current = e.clientX;
+      lastMouseYRef.current = e.clientY;
+      if (rafIdRef.current == null) {
+        rafIdRef.current = requestAnimationFrame(() => {
+          rafIdRef.current = null;
+          const el = cursorRef.current;
+          if (!el) return;
+          const width = el.offsetWidth || 0;
+          const height = el.offsetHeight || 0;
+          const x = lastMouseXRef.current - width / 2;
+          const y = lastMouseYRef.current - height / 2;
+          el.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+        });
+      }
     };
 
     // Only track mouse movement on desktop devices (not mobile)
     const isDesktop = window.matchMedia('(pointer: fine)').matches;
     
     if (isDesktop) {
-      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mousemove', handleMouseMove, { passive: true });
     }
-    window.addEventListener('scroll', handleScroll);
 
     return () => {
       clearTimeout(timer);
       clearInterval(interval);
       clearInterval(carouselInterval);
       if (isDesktop) {
-        window.removeEventListener('mousemove', handleMouseMove);
+        window.removeEventListener('mousemove', handleMouseMove as any);
       }
-      window.removeEventListener('scroll', handleScroll);
+      if (rafIdRef.current != null) cancelAnimationFrame(rafIdRef.current);
     };
-  }, []);
+  }, [prefersReducedMotion]);
 
   // Handle manual image selection with auto-pause
   const handleImageSelect = (index: number) => {
@@ -565,6 +650,21 @@ function App() {
     return colors[accent as keyof typeof colors] || 'border-blue-500/30';
   };
 
+  function AssetPicture({ index, sizes, className, alt, eager = false, style, draggable }: { index: number; sizes?: string; className?: string; alt: string; eager?: boolean; style?: React.CSSProperties; draggable?: boolean }) {
+    const png = `/Assets/${index}.png`;
+    const webp = `/Assets/${index}.webp`;
+    const avif = `/Assets/${index}.avif`;
+    const loading = eager ? 'eager' : 'lazy';
+    const fetchPriority = eager ? 'high' : undefined;
+    return (
+      <picture>
+        <source srcSet={avif} type="image/avif" />
+        <source srcSet={webp} type="image/webp" />
+        <img src={png} alt={alt} loading={loading as any} decoding="async" fetchPriority={fetchPriority as any} sizes={sizes} className={className} style={style} draggable={draggable} />
+      </picture>
+    );
+  }
+
   // Helper functions for desktop-only hover effects
   const handleSetHovered = (element: string | null) => {
     // Only set hover state on desktop devices
@@ -581,7 +681,6 @@ function App() {
     default: 'clamp(1rem, 1.5vw, 1.3rem)', // 16-21px
   };
   const cursorSize = cursorSizeMap[hoveredElement || 'default'] || cursorSizeMap.default;
-  const cursorOffset = `calc(${cursorSize} / 2)`;
 
   // Mobile gallery swipe state
   const touchStartX = useRef<number | null>(null);
@@ -665,16 +764,18 @@ function App() {
 
       {/* Advanced Adaptive Cursor - Hidden on mobile */}
       <div 
-        className="fixed pointer-events-none z-50 transition-all duration-300 ease-out hidden md:block"
+        ref={cursorRef}
+        className="fixed pointer-events-none z-50 transition-all duration-300 ease-out hidden md:block will-change-transform"
         style={{
           width: cursorSize,
           height: cursorSize,
-          left: `calc(${mousePosition.x}px - ${cursorOffset})`,
-          top: `calc(${mousePosition.y}px - ${cursorOffset})`,
+          left: 0,
+          top: 0,
           minWidth: '1rem',
           minHeight: '1rem',
           maxWidth: '3.5rem',
           maxHeight: '3.5rem',
+          transform: 'translate3d(-9999px, -9999px, 0)'
         }}
       >
         <div className={`w-full h-full rounded-full transition-all duration-300 ${
@@ -743,6 +844,9 @@ function App() {
                   <img 
                     src="/logo.png" 
                     alt="Clippy Logo" 
+                    loading="eager"
+                    fetchPriority="high"
+                    decoding="async"
                     className="w-12 h-12 group-hover:rotate-6 transition-transform duration-300"
                   />
                 </div>
@@ -916,6 +1020,9 @@ function App() {
                     <img 
                       src="/logo.png" 
                       alt="Clippy Logo" 
+                      loading="eager"
+                      fetchPriority="high"
+                      decoding="async"
                       className="w-56 h-56 group-hover:rotate-6 transition-transform duration-500"
                     />
                   </div>
@@ -1121,8 +1228,8 @@ function App() {
               >
                 {/* Peek previous image */}
                 {activeCarouselIndex > 0 && (
-                  <img
-                    src={`/Assets/${activeCarouselIndex}.png`}
+                  <AssetPicture
+                    index={activeCarouselIndex}
                     alt="Peek Previous"
                     className="w-20 h-32 object-cover rounded-2xl absolute left-0 top-1/2 -translate-y-1/2 opacity-50 scale-90 z-0 pointer-events-none transition-all duration-300"
                     style={{ left: '0.5rem' }}
@@ -1130,8 +1237,8 @@ function App() {
                 )}
                 {/* Main image */}
                 <div className="relative backdrop-blur-2xl bg-gradient-to-br from-white/10 to-white/5 border border-white/20 rounded-3xl overflow-hidden shadow-xl shadow-black/30 z-10">
-                  <img
-                    src={`/Assets/${activeCarouselIndex + 1}.png`}
+                  <AssetPicture
+                    index={activeCarouselIndex + 1}
                     alt={`Clippy Interface ${activeCarouselIndex + 1}`}
                     className="w-80 h-auto object-cover rounded-3xl select-none"
                     draggable={false}
@@ -1151,6 +1258,8 @@ function App() {
                 {activeCarouselIndex < 3 && (
                   <img
                     src={`/Assets/${activeCarouselIndex + 2}.png`}
+                    loading="lazy"
+                    decoding="async"
                     alt="Peek Next"
                     className="w-20 h-32 object-cover rounded-2xl absolute right-0 top-1/2 -translate-y-1/2 opacity-50 scale-90 z-0 pointer-events-none transition-all duration-300"
                     style={{ right: '0.5rem' }}
@@ -1175,6 +1284,8 @@ function App() {
                   >
                     <img
                       src={`/Assets/${num}.png`}
+                      loading="lazy"
+                      decoding="async"
                       alt={`Clippy Interface ${num}`}
                       className="w-16 h-16 object-cover rounded-2xl"
                     />
@@ -1211,6 +1322,8 @@ function App() {
                     <div className="relative">
                       <img
                         src={`/Assets/${num}.png`}
+                        loading={isCenter ? 'eager' : 'lazy'}
+                        decoding="async"
                         alt={`Clippy Interface ${num}`}
                         className={`
                           w-full h-auto object-cover rounded-2xl sm:rounded-3xl transition-all duration-700 ease-in-out
@@ -1471,6 +1584,9 @@ function App() {
                 <img 
                   src="/logo.png" 
                   alt="Clippy Logo" 
+                  loading="eager"
+                  fetchPriority="high"
+                  decoding="async"
                   className="w-12 h-12 group-hover:rotate-6 transition-transform duration-300"
                 />
               </div>
