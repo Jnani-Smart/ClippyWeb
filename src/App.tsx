@@ -295,6 +295,11 @@ function App() {
 
         // Try to fetch from GitHub API with authentication
         const githubToken = import.meta.env.VITE_GITHUB_TOKEN;
+        
+        // Debug logging (remove in production)
+        console.log('GitHub Token available:', !!githubToken);
+        console.log('Environment variables:', import.meta.env);
+        
         const headers: HeadersInit = {
           'Accept': 'application/vnd.github.v3+json',
           'User-Agent': 'Clippy-Web-App'
@@ -303,6 +308,9 @@ function App() {
         // Only add authorization header if token is available
         if (githubToken) {
           headers['Authorization'] = `token ${githubToken}`;
+          console.log('Authorization header added');
+        } else {
+          console.log('No GitHub token found, proceeding without authentication');
         }
         
         const response = await fetch('https://api.github.com/repos/Jnani-Smart/Clippy/releases/latest', {
