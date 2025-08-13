@@ -90,7 +90,7 @@ npm run lint
 ### Deployment URL
 
 Once deployed, your site will be available at:
-- **Production**: `https://clippy-web.netlify.app/`
+- **Production**: `https://clippyapp.netlify.app/`
 - **Custom Domain**: Configure in Netlify dashboard
 
 ### Continuous Deployment
