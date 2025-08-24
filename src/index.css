@@ -250,7 +250,16 @@
 }
 
 /* Enhanced Cursor System */
-/* Hide cursor on desktop, show on mobile */
+/* Professional cursor styling */
+* {
+  cursor: default;
+}
+
+a, button, [role="button"], input, textarea, select {
+  cursor: pointer;
+}
+
+/* Custom cursor for desktop only */
 @media (pointer: fine) {
   * {
     cursor: none;
@@ -283,54 +292,54 @@
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
-  background-color: #000; /* Black background */
+  background-color: #f9fafb; /* Light gray background */
 }
 
 ::-webkit-scrollbar-track {
-  background: #000000; /* Black background */
+  background: #f9fafb; /* Light gray background */
   border-radius: 8px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(30, 30, 30, 0.8); /* Very dark gray, almost black */
+  background: rgba(156, 163, 175, 0.5); /* Professional gray */
   border-radius: 8px;
-  border: 1px solid rgba(40, 40, 40, 0.5);
+  border: 1px solid rgba(209, 213, 219, 0.5);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(50, 50, 50, 0.9); /* Slightly lighter on hover */
+  background: rgba(107, 114, 128, 0.7); /* Darker on hover */
 }
 
 ::-webkit-scrollbar-corner {
-  background: #000000;
+  background: #f9fafb;
 }
 
 /* For Firefox */
 html {
   scrollbar-width: thin;
-  scrollbar-color: #333 #000;
+  scrollbar-color: rgba(156, 163, 175, 0.5) #f9fafb;
 }
 
 /* Enhanced Glass Morphism */
 .glass {
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(229, 231, 235, 0.5);
 }
 
 .glass-strong {
   backdrop-filter: blur(40px);
   -webkit-backdrop-filter: blur(40px);
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(229, 231, 235, 0.7);
 }
 
 .glass-ultra {
   backdrop-filter: blur(60px);
   -webkit-backdrop-filter: blur(60px);
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(229, 231, 235, 0.8);
 }
 
 /* Advanced 3D Transform System */
