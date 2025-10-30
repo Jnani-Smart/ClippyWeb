@@ -31,6 +31,9 @@
     padding: 0;
     overflow-x: hidden;
     background-color: #000;
+    /* Enhanced smooth scrolling */
+    scroll-snap-type: y proximity;
+    scroll-padding-top: 80px;
   }
   
   body {
@@ -1066,4 +1069,362 @@ html {
     transform: scale(1.03);
     opacity: 0.95;
   }
+}
+
+/* ================================= */
+/* ADVANCED MODERN REDESIGN EFFECTS  */
+/* ================================= */
+
+/* Parallax Scroll Animations */
+.parallax-layer-1 {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+.parallax-layer-2 {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+.parallax-layer-3 {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* 3D Card Tilt Effect */
+.card-3d {
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+  will-change: transform;
+}
+
+.card-3d-inner {
+  transform: translateZ(40px);
+  transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* Magnetic Button Effect */
+.magnetic-button {
+  position: relative;
+  transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  will-change: transform;
+}
+
+/* Enhanced Scroll Reveal Animations */
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(80px) scale(0.95);
+    filter: blur(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes reveal-scale {
+  from {
+    opacity: 0;
+    transform: scale(0.8) rotateX(45deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotateX(0deg);
+  }
+}
+
+@keyframes reveal-slide-right {
+  from {
+    opacity: 0;
+    transform: translateX(-100px) rotateY(-20deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) rotateY(0deg);
+  }
+}
+
+@keyframes reveal-slide-left {
+  from {
+    opacity: 0;
+    transform: translateX(100px) rotateY(20deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) rotateY(0deg);
+  }
+}
+
+@keyframes float-advanced {
+  0%, 100% {
+    transform: translateY(0) rotateZ(0deg);
+  }
+  25% {
+    transform: translateY(-15px) rotateZ(1deg);
+  }
+  50% {
+    transform: translateY(-25px) rotateZ(0deg);
+  }
+  75% {
+    transform: translateY(-15px) rotateZ(-1deg);
+  }
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 20px rgba(59, 130, 246, 0.2),
+      0 0 40px rgba(147, 51, 234, 0.15),
+      0 0 60px rgba(59, 130, 246, 0.1);
+  }
+  50% {
+    box-shadow:
+      0 0 40px rgba(59, 130, 246, 0.4),
+      0 0 80px rgba(147, 51, 234, 0.3),
+      0 0 120px rgba(59, 130, 246, 0.2);
+  }
+}
+
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes shimmer-advanced {
+  0% {
+    transform: translateX(-100%) skewX(-15deg);
+  }
+  100% {
+    transform: translateX(200%) skewX(-15deg);
+  }
+}
+
+/* Modern Minimalist Card Styles */
+.modern-card {
+  position: relative;
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  overflow: hidden;
+  transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.modern-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: left 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.modern-card:hover::before {
+  left: 100%;
+}
+
+.modern-card:hover {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.06) 100%);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-8px);
+  box-shadow:
+    0 30px 60px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Floating Elements */
+@keyframes float-infinite {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px) rotate(0deg);
+  }
+  33% {
+    transform: translateY(-20px) translateX(10px) rotate(2deg);
+  }
+  66% {
+    transform: translateY(-10px) translateX(-10px) rotate(-2deg);
+  }
+}
+
+.float-element {
+  animation: float-infinite 8s ease-in-out infinite;
+  will-change: transform;
+}
+
+.float-element-slow {
+  animation: float-infinite 12s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Gradient Text Animation */
+@keyframes gradient-flow {
+  0% {
+    background-position: 0% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+.gradient-text-animated {
+  background: linear-gradient(
+    90deg,
+    #fff 0%,
+    #60a5fa 25%,
+    #a78bfa 50%,
+    #60a5fa 75%,
+    #fff 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradient-flow 4s linear infinite;
+}
+
+/* Micro-interactions */
+.micro-interaction {
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.micro-interaction:hover {
+  transform: scale(1.05) translateY(-2px);
+}
+
+.micro-interaction:active {
+  transform: scale(0.98) translateY(0);
+}
+
+/* Enhanced Button Hover Effects */
+.button-modern {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.button-modern::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.button-modern:hover::after {
+  width: 300px;
+  height: 300px;
+}
+
+/* Staggered Animation Classes */
+@layer utilities {
+  .animate-reveal-up {
+    animation: reveal-up 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+  }
+
+  .animate-reveal-scale {
+    animation: reveal-scale 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+  }
+
+  .animate-reveal-slide-right {
+    animation: reveal-slide-right 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+  }
+
+  .animate-reveal-slide-left {
+    animation: reveal-slide-left 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+  }
+
+  .animate-float-advanced {
+    animation: float-advanced 6s ease-in-out infinite;
+  }
+
+  .animate-spin-slow {
+    animation: spin-slow 30s linear infinite;
+  }
+
+  .animate-glow-pulse {
+    animation: glow-pulse 3s ease-in-out infinite;
+  }
+
+  .animate-gradient-shift {
+    background-size: 200% 200%;
+    animation: gradient-shift 8s ease infinite;
+  }
+
+  .delay-100 { animation-delay: 100ms; }
+  .delay-200 { animation-delay: 200ms; }
+  .delay-300 { animation-delay: 300ms; }
+  .delay-400 { animation-delay: 400ms; }
+  .delay-500 { animation-delay: 500ms; }
+  .delay-600 { animation-delay: 600ms; }
+  .delay-700 { animation-delay: 700ms; }
+  .delay-800 { animation-delay: 800ms; }
+}
+
+/* Scroll Snap Sections */
+.snap-section {
+  scroll-snap-align: start;
+  scroll-snap-stop: normal;
+}
+
+/* Enhanced Backdrop Effects */
+.backdrop-blur-4xl {
+  backdrop-filter: blur(80px);
+  -webkit-backdrop-filter: blur(80px);
+}
+
+/* Modern Shadow System */
+.shadow-modern-sm {
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.shadow-modern {
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(255, 255, 255, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.shadow-modern-lg {
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Perspective Transforms */
+.perspective-card {
+  perspective: 1500px;
+}
+
+.transform-3d {
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
 }
