@@ -44,9 +44,18 @@ function App() {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [launchAnimationComplete, setLaunchAnimationComplete] = useState(false);
   const [isAppReady, setIsAppReady] = useState(false);
-  
+
   // Intersection observer states for scroll animations
   const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set());
+
+  // Parallax scroll state
+  const [scrollY, setScrollY] = useState(0);
+
+  // Magnetic button state
+  const magneticRefs = useRef<Map<string, HTMLElement>>(new Map());
+
+  // 3D card tilt refs
+  const cardTiltRefs = useRef<Map<number, HTMLDivElement>>(new Map());
   
   // Track which feature cards are in view (for mobile scroll animation)
   const [visibleFeatureCards, setVisibleFeatureCards] = useState<Set<number>>(new Set());
@@ -579,6 +588,63 @@ function App() {
     };
   }, [isMobile, testimonials.length]);
 
+  // Parallax scroll effect
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Magnetic button effect
+  const handleMagneticMove = useCallback((e: React.MouseEvent<HTMLElement>, key: string) => {
+    if (!window.matchMedia('(pointer: fine)').matches || prefersReducedMotion) return;
+
+    const button = e.currentTarget;
+    const rect = button.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+    const distance = Math.sqrt(x * x + y * y);
+    const maxDistance = 50;
+
+    if (distance < maxDistance) {
+      const strength = (maxDistance - distance) / maxDistance;
+      const moveX = x * strength * 0.3;
+      const moveY = y * strength * 0.3;
+      button.style.transform = `translate(${moveX}px, ${moveY}px)`;
+    }
+  }, [prefersReducedMotion]);
+
+  const handleMagneticLeave = useCallback((e: React.MouseEvent<HTMLElement>) => {
+    if (!window.matchMedia('(pointer: fine)').matches) return;
+    const button = e.currentTarget;
+    button.style.transform = 'translate(0, 0)';
+  }, []);
+
+  // 3D card tilt effect
+  const handleCardTilt = useCallback((e: React.MouseEvent<HTMLDivElement>, index: number) => {
+    if (!window.matchMedia('(pointer: fine)').matches || prefersReducedMotion) return;
+
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = ((y - centerY) / centerY) * -10;
+    const rotateY = ((x - centerX) / centerX) * 10;
+
+    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.05, 1.05, 1.05)`;
+  }, [prefersReducedMotion]);
+
+  const handleCardTiltLeave = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!window.matchMedia('(pointer: fine)').matches) return;
+    const card = e.currentTarget;
+    card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+  }, []);
+
   const detailedFeatures = [
     {
       icon: Clipboard,
@@ -800,40 +866,83 @@ function App() {
         }`}></div>
       </div>
 
-      {/* Enhanced Dynamic Background */}
+      {/* Enhanced Dynamic Background with Parallax Layers */}
       <div className="fixed inset-0 overflow-hidden">
-        <div 
-          className="absolute inset-0 opacity-30"
+        {/* Parallax Layer 1 - Slowest */}
+        <div
+          className="absolute inset-0 opacity-30 parallax-layer-1"
+          style={{
+            transform: `translateY(${scrollY * 0.1}px)`,
+            transition: 'transform 0.1s ease-out'
+          }}
         >
-          <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-gradient-to-r from-blue-500/8 via-cyan-500/6 to-blue-600/8 rounded-full blur-3xl animate-float-bg"></div>
-          <div className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-gradient-to-r from-purple-500/8 via-violet-500/6 to-purple-600/8 rounded-full blur-3xl animate-float-bg" style={{ animationDelay: '5s' }}></div>
-          <div className="absolute top-1/2 left-1/2 w-[600px] h-[600px] bg-gradient-to-r from-emerald-500/8 via-green-500/6 to-emerald-600/8 rounded-full blur-3xl animate-float-bg" style={{ animationDelay: '10s' }}></div>
+          <div className="absolute top-1/4 left-1/4 w-[800px] h-[800px] bg-gradient-to-r from-blue-500/10 via-cyan-500/8 to-blue-600/10 rounded-full blur-3xl animate-float-bg"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-[800px] h-[800px] bg-gradient-to-r from-purple-500/10 via-violet-500/8 to-purple-600/10 rounded-full blur-3xl animate-float-bg" style={{ animationDelay: '5s' }}></div>
         </div>
-        
-        {/* Enhanced Floating Particles */}
-        <div className="absolute inset-0">
-          {[...Array(30)].map((_, i) => (
+
+        {/* Parallax Layer 2 - Medium */}
+        <div
+          className="absolute inset-0 opacity-40 parallax-layer-2"
+          style={{
+            transform: `translateY(${scrollY * 0.2}px)`,
+            transition: 'transform 0.1s ease-out'
+          }}
+        >
+          <div className="absolute top-1/2 left-1/2 w-[600px] h-[600px] bg-gradient-to-r from-emerald-500/12 via-green-500/8 to-emerald-600/12 rounded-full blur-3xl animate-float-bg" style={{ animationDelay: '10s' }}></div>
+          <div className="absolute top-1/3 right-1/3 w-[500px] h-[500px] bg-gradient-to-r from-pink-500/8 via-rose-500/6 to-pink-600/8 rounded-full blur-3xl animate-float-bg" style={{ animationDelay: '15s' }}></div>
+        </div>
+
+        {/* Parallax Layer 3 - Fastest */}
+        <div
+          className="absolute inset-0 opacity-20 parallax-layer-3"
+          style={{
+            transform: `translateY(${scrollY * 0.3}px)`,
+            transition: 'transform 0.1s ease-out'
+          }}
+        >
+          <div className="absolute bottom-1/3 left-1/3 w-[400px] h-[400px] bg-gradient-to-r from-orange-500/10 via-amber-500/8 to-orange-600/10 rounded-full blur-3xl animate-float-bg" style={{ animationDelay: '20s' }}></div>
+        </div>
+
+        {/* Enhanced Floating Particles with Parallax */}
+        <div
+          className="absolute inset-0"
+          style={{
+            transform: `translateY(${scrollY * 0.15}px)`,
+            transition: 'transform 0.1s ease-out'
+          }}
+        >
+          {[...Array(50)].map((_, i) => (
             <div
               key={i}
-              className="absolute w-1 h-1 bg-white/15 rounded-full animate-pulse"
+              className="absolute rounded-full animate-pulse"
               style={{
+                width: `${Math.random() * 3 + 1}px`,
+                height: `${Math.random() * 3 + 1}px`,
+                background: `rgba(255, 255, 255, ${Math.random() * 0.2 + 0.05})`,
                 left: `${Math.random() * 100}%`,
                 top: `${Math.random() * 100}%`,
                 animationDelay: `${Math.random() * 5}s`,
-                animationDuration: `${4 + Math.random() * 3}s`
+                animationDuration: `${4 + Math.random() * 3}s`,
+                filter: `blur(${Math.random() * 1}px)`
               }}
             />
           ))}
         </div>
 
-        {/* Grid Pattern Overlay */}
-        <div className="absolute inset-0 opacity-[0.02]">
+        {/* Grid Pattern Overlay with Parallax */}
+        <div
+          className="absolute inset-0 opacity-[0.015]"
+          style={{
+            transform: `translateY(${scrollY * 0.05}px)`,
+            transition: 'transform 0.1s ease-out'
+          }}
+        >
           <div className="absolute inset-0" style={{
             backgroundImage: `
-              linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)
+              linear-gradient(rgba(255,255,255,0.15) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(255,255,255,0.15) 1px, transparent 1px)
             `,
-            backgroundSize: '50px 50px'
+            backgroundSize: '60px 60px'
           }}></div>
         </div>
       </div>
@@ -1010,28 +1119,37 @@ function App() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <div className={`transition-all duration-1200 ${isVisible && launchAnimationComplete ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}>
-              {/* Hero Icon */}
+              {/* Hero Icon with Parallax */}
               <div className="flex justify-center mb-4">
-                <div 
+                <div
                   className={`relative group cursor-pointer transition-all duration-1000 ${
                     launchAnimationComplete ? 'animate-hero-logo-entrance' : ''
                   }`}
-                  style={{ willChange: 'transform, opacity, filter' }}
+                  style={{
+                    willChange: 'transform, opacity, filter',
+                    transform: `translateY(${scrollY * -0.15}px)`,
+                    transition: 'transform 0.2s ease-out'
+                  }}
                   onMouseEnter={() => handleSetHovered('card')}
                   onMouseLeave={() => handleSetHovered(null)}
                 >
-                  <div 
-                    className={`w-64 h-64 flex items-center justify-center group-hover:scale-105 transition-all duration-500 ${
-                      launchAnimationComplete ? 'animate-pulse-subtle' : ''
+                  {/* Glowing Ring Around Logo */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="absolute w-72 h-72 rounded-full bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-cyan-500/20 blur-3xl animate-glow-pulse"></div>
+                  </div>
+
+                  <div
+                    className={`relative w-64 h-64 flex items-center justify-center group-hover:scale-105 transition-all duration-500 ${
+                      launchAnimationComplete ? 'animate-pulse-subtle animate-float-advanced' : ''
                     }`}
                   >
-                    <img 
-                      src="/logo.png" 
-                      alt="Clippy Logo" 
+                    <img
+                      src="/logo.png"
+                      alt="Clippy Logo"
                       loading="eager"
                       fetchPriority="high"
                       decoding="async"
-                      className="w-56 h-56 group-hover:rotate-6 transition-transform duration-500"
+                      className="w-56 h-56 group-hover:rotate-6 transition-transform duration-500 drop-shadow-2xl"
                     />
                   </div>
                 </div>
@@ -1055,28 +1173,32 @@ function App() {
                 <span className="text-white font-medium inline-block"> VisionOS-inspired interface</span>
               </p>
               
-              {/* CTA Buttons */}
+              {/* CTA Buttons with Magnetic Effect */}
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <a 
+                <a
                   href="#download"
                   aria-label="Download for macOS"
-                  className={`group relative px-12 py-4 bg-gradient-to-br from-white/15 to-white/8 backdrop-blur-2xl border border-white/20 rounded-2xl font-bold text-lg transition-all duration-400 hover:scale-105 hover:shadow-xl hover:bg-white/20`}
+                  className={`magnetic-button button-modern group relative px-12 py-4 bg-gradient-to-br from-white/15 to-white/8 backdrop-blur-2xl border border-white/20 rounded-2xl font-bold text-lg transition-all duration-400 hover:scale-105 hover:shadow-xl hover:bg-white/20 shadow-modern`}
                   onMouseEnter={() => handleSetHovered('button')}
                   onMouseLeave={() => handleSetHovered(null)}
+                  onMouseMove={(e) => handleMagneticMove(e, 'download')}
+                  onMouseOut={handleMagneticLeave}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-400/15 via-purple-400/10 to-cyan-400/15 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 via-purple-400/15 to-cyan-400/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-glow-pulse"></div>
                   <div className="relative flex items-center space-x-3">
                     <Download className="w-7 h-7 group-hover:animate-bounce" />
                     <span>Download for macOS</span>
                     <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform duration-300" />
                   </div>
                 </a>
-                
-                <button 
+
+                <button
                   aria-label="Watch Demo"
-                  className={`group px-12 py-4 backdrop-blur-2xl bg-white/8 border border-white/15 rounded-2xl font-bold text-lg transition-all duration-400 hover:bg-white/12 hover:scale-105`}
+                  className={`magnetic-button button-modern group px-12 py-4 backdrop-blur-2xl bg-white/8 border border-white/15 rounded-2xl font-bold text-lg transition-all duration-400 hover:bg-white/12 hover:scale-105 shadow-modern`}
                   onMouseEnter={() => handleSetHovered('button')}
                   onMouseLeave={() => handleSetHovered(null)}
+                  onMouseMove={(e) => handleMagneticMove(e, 'demo')}
+                  onMouseOut={handleMagneticLeave}
                 >
                   <div className="flex items-center space-x-3">
                     <Play className="w-7 h-7 group-hover:scale-110 transition-transform duration-300" />
@@ -1087,28 +1209,50 @@ function App() {
             </div>
           </div>
 
-          {/* Quick Features Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+          {/* Quick Features Grid with 3D Tilt */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6 perspective-card">
             {features.map((feature, index) => (
               <div
                 key={index}
-                ref={el => featureCardRefs.current[index] = el}
+                ref={el => {
+                  featureCardRefs.current[index] = el;
+                  if (el) cardTiltRefs.current.set(index, el);
+                }}
                 data-idx={index}
-                className={`group relative p-6 backdrop-blur-2xl bg-gradient-to-br ${feature.gradient} border border-white/12 rounded-2xl transition-all duration-500 cursor-pointer
-                  ${activeFeature === index ? `ring-2 ring-white/30 ${getBorderColor(feature.accent)}` : ''}
-                  ${isMobile && visibleFeatureCards.has(index) ? 'hover:scale-105 group-hover:scale-110 group-hover:rotate-6' : ''}
-                  ${!isMobile ? 'hover:scale-105' : ''}
+                className={`modern-card card-3d group relative p-6 backdrop-blur-2xl bg-gradient-to-br ${feature.gradient} border border-white/12 rounded-3xl transition-all duration-500 cursor-pointer transform-3d shadow-modern
+                  ${activeFeature === index ? `ring-2 ring-white/30 ${getBorderColor(feature.accent)} shadow-modern-lg` : ''}
+                  ${isMobile && visibleFeatureCards.has(index) ? 'animate-reveal-up' : ''}
+                  ${!isMobile ? 'hover:shadow-modern-lg' : ''}
                 `}
+                style={{ transitionDelay: `${index * 100}ms` }}
                 onMouseEnter={() => handleSetHovered('card')}
                 onMouseLeave={() => handleSetHovered(null)}
+                onMouseMove={(e) => !isMobile && handleCardTilt(e, index)}
+                onMouseOut={(e) => !isMobile && handleCardTiltLeave(e)}
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-white/8 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <div className="relative z-10">
-                  <div className={`w-16 h-16 bg-gradient-to-br from-white/20 to-white/8 backdrop-blur-2xl border border-white/25 rounded-2xl flex items-center justify-center mb-6 transition-all duration-300
+                <div className="absolute inset-0 bg-gradient-to-br from-white/12 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+                {/* Floating particles inside card */}
+                <div className="absolute inset-0 overflow-hidden rounded-3xl pointer-events-none">
+                  {[...Array(3)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="absolute w-1 h-1 bg-white/20 rounded-full animate-float-advanced"
+                      style={{
+                        left: `${20 + i * 30}%`,
+                        top: `${20 + i * 20}%`,
+                        animationDelay: `${i * 0.5}s`
+                      }}
+                    />
+                  ))}
+                </div>
+
+                <div className="relative z-10 card-3d-inner">
+                  <div className={`w-16 h-16 bg-gradient-to-br from-white/25 to-white/10 backdrop-blur-2xl border border-white/30 rounded-2xl flex items-center justify-center mb-6 transition-all duration-300 shadow-modern-sm
                     ${isMobile && visibleFeatureCards.has(index) ? 'scale-110 rotate-6' : ''}
                     ${!isMobile ? 'group-hover:scale-110 group-hover:rotate-6' : ''}
                   `}>
-                    <feature.icon className="w-8 h-8 text-white" />
+                    <feature.icon className="w-8 h-8 text-white drop-shadow-lg" />
                   </div>
                   <h3 className="text-xl font-bold mb-3 text-white">{feature.title}</h3>
                   <p className="text-white/70 text-base leading-relaxed">{feature.description}</p>
@@ -1119,45 +1263,59 @@ function App() {
         </div>
       </section>
 
-      {/* Detailed Features Section */}
-      <section ref={featuresRef} id="features" className="relative z-10 py-12 px-6 sm:px-8 lg:px-12">
+      {/* Detailed Features Section with Enhanced Animations */}
+      <section ref={featuresRef} id="features" className="relative z-10 py-20 px-6 sm:px-8 lg:px-12 snap-section">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black mb-6 tracking-tight font-display">
-              <span className="inline-block text-white">Powerful Features</span>
+          <div className="text-center mb-20">
+            <h2 className={`text-4xl md:text-5xl lg:text-6xl font-black mb-6 tracking-tight font-display transition-all duration-1000 ${
+              visibleSections.has('features') ? 'opacity-100 translate-y-0 animate-reveal-up' : 'opacity-0 translate-y-12'
+            }`}>
+              <span className="inline-block text-white gradient-text-animated">Powerful Features</span>
             </h2>
-            <p className="text-lg md:text-xl text-white/70 max-w-3xl mx-auto font-light leading-relaxed">
+            <p className={`text-lg md:text-xl text-white/70 max-w-3xl mx-auto font-light leading-relaxed transition-all duration-1000 delay-200 ${
+              visibleSections.has('features') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+            }`}>
               Every detail crafted for the perfect clipboard management experience
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 perspective-card">
             {detailedFeatures.map((feature, index) => (
               <div
                 key={index}
-                className={`group relative p-6 backdrop-blur-2xl bg-gradient-to-br from-white/6 to-white/3 border border-white/12 rounded-2xl transition-all duration-500 hover:scale-105 cursor-pointer ${
-                  visibleSections.has('features') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+                className={`modern-card card-3d group relative p-8 backdrop-blur-2xl bg-gradient-to-br from-white/8 to-white/4 border border-white/12 rounded-3xl cursor-pointer transform-3d shadow-modern ${
+                  visibleSections.has('features') ? 'animate-reveal-scale delay-' + (index * 100) : 'opacity-0'
                 }`}
-                style={{ transitionDelay: `${index * 100}ms` }}
+                style={{
+                  transitionDelay: `${index * 150}ms`,
+                  animationDelay: `${index * 150}ms`
+                }}
                 onMouseEnter={() => handleSetHovered('card')}
                 onMouseLeave={() => handleSetHovered(null)}
+                onMouseMove={(e) => !isMobile && handleCardTilt(e, 100 + index)}
+                onMouseOut={(e) => !isMobile && handleCardTiltLeave(e)}
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-white/12 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-400"></div>
-                <div className="relative z-10">
+                <div className="absolute inset-0 bg-gradient-to-br from-white/15 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+                {/* Animated border glow */}
+                <div className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-glow-pulse"></div>
+
+                <div className="relative z-10 card-3d-inner">
                   <div className="flex items-start space-x-6 mb-6">
-                    <div className="w-16 h-16 bg-gradient-to-br from-white/20 to-white/8 backdrop-blur-2xl border border-white/25 rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-400">
-                      <feature.icon className="w-8 h-8 text-white" />
+                    <div className="w-20 h-20 bg-gradient-to-br from-white/25 to-white/10 backdrop-blur-2xl border border-white/30 rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 shadow-modern float-element">
+                      <feature.icon className="w-10 h-10 text-white drop-shadow-lg" />
                     </div>
                     <div className="flex-1">
-                      <h3 className="text-xl font-bold text-white mb-2">{feature.title}</h3>
+                      <h3 className="text-xl font-bold text-white mb-3">{feature.title}</h3>
                       <div className="flex items-center space-x-3 mb-3">
-                        <span className={`text-sm font-bold ${getAccentColor(feature.accent)}`}>
+                        <span className={`text-sm font-bold ${getAccentColor(feature.accent)} px-3 py-1 rounded-full bg-white/10 border border-white/20`}>
                           {feature.highlight}
                         </span>
                       </div>
                     </div>
                   </div>
-                  <p className="text-white/80 leading-relaxed text-base">{feature.description}</p>
+                  <p className="text-white/80 leading-relaxed text-base mb-4">{feature.description}</p>
+                  <div className="text-white/50 text-sm font-medium">{feature.stats}</div>
                 </div>
               </div>
             ))}
@@ -1165,11 +1323,11 @@ function App() {
         </div>
       </section>
 
-      {/* Content Types Section */}
-      <section className="relative z-10 py-16 px-6 sm:px-8 lg:px-12">
+      {/* Content Types Section with Modern Cards */}
+      <section className="relative z-10 py-20 px-6 sm:px-8 lg:px-12 snap-section">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-black mb-4 tracking-tight font-display">
+          <div className="text-center mb-20">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-black mb-6 tracking-tight font-display">
               <span className="inline-block text-white">Handle Any Content</span>
             </h2>
             <p className="text-lg md:text-xl text-white/70 max-w-3xl mx-auto font-light leading-relaxed">
@@ -1177,31 +1335,35 @@ function App() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 perspective-card">
             {contentTypes.map((type, index) => (
-              <div 
-                key={index} 
+              <div
+                key={index}
                 ref={el => contentTypeCardRefs.current[index] = el}
                 data-idx={index}
-                className={`group relative p-6 backdrop-blur-2xl bg-gradient-to-br from-white/6 to-white/3 border border-white/12 rounded-2xl transition-all duration-500 cursor-pointer min-h-[280px] flex flex-col
-                  ${isMobile && visibleContentTypeCards.has(index) ? 'hover:scale-105 group-hover:scale-110 group-hover:rotate-6' : ''}
-                  ${!isMobile ? 'hover:scale-105' : ''}
+                className={`modern-card card-3d group relative p-8 backdrop-blur-2xl bg-gradient-to-br from-white/8 to-white/4 border border-white/12 rounded-3xl cursor-pointer min-h-[320px] flex flex-col transform-3d shadow-modern
+                  ${isMobile && visibleContentTypeCards.has(index) ? 'animate-reveal-up' : ''}
+                  ${!isMobile ? 'hover:shadow-modern-lg' : ''}
                 `}
+                style={{ transitionDelay: `${index * 100}ms` }}
                 onMouseEnter={() => handleSetHovered('card')}
                 onMouseLeave={() => handleSetHovered(null)}
+                onMouseMove={(e) => !isMobile && handleCardTilt(e, 200 + index)}
+                onMouseOut={(e) => !isMobile && handleCardTiltLeave(e)}
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-white/12 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-400"></div>
-                <div className="relative z-10 text-center flex-1 flex flex-col">
-                  <div className={`w-16 h-16 bg-gradient-to-br from-white/20 to-white/8 backdrop-blur-2xl border border-white/25 rounded-2xl flex items-center justify-center mb-6 mx-auto transition-all duration-400
+                <div className="absolute inset-0 bg-gradient-to-br from-white/15 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+                <div className="relative z-10 text-center flex-1 flex flex-col card-3d-inner">
+                  <div className={`w-20 h-20 bg-gradient-to-br from-white/25 to-white/10 backdrop-blur-2xl border border-white/30 rounded-2xl flex items-center justify-center mb-6 mx-auto shadow-modern-sm float-element-slow transition-all duration-500
                     ${isMobile && visibleContentTypeCards.has(index) ? 'scale-110 rotate-6' : ''}
-                    ${!isMobile ? 'group-hover:scale-110 group-hover:rotate-6' : ''}
+                    ${!isMobile ? 'group-hover:scale-125 group-hover:rotate-12' : ''}
                   `}>
-                    <type.icon className="w-8 h-8 text-white" />
+                    <type.icon className="w-10 h-10 text-white drop-shadow-lg" />
                   </div>
-                  <h3 className="text-lg font-bold text-white mb-3">{type.title}</h3>
-                  <p className="text-white/70 text-sm mb-4 leading-relaxed flex-1">{type.description}</p>
-                  <div className="space-y-2 mt-auto">
-                    <div className={`inline-block px-3 py-1 rounded-xl text-xs font-bold ${getAccentColor(type.color)} bg-white/8 border border-white/15`}>
+                  <h3 className="text-xl font-bold text-white mb-4">{type.title}</h3>
+                  <p className="text-white/70 text-sm mb-6 leading-relaxed flex-1">{type.description}</p>
+                  <div className="space-y-3 mt-auto">
+                    <div className={`inline-block px-4 py-2 rounded-xl text-sm font-bold ${getAccentColor(type.color)} bg-white/10 border border-white/20 shadow-modern-sm`}>
                       {type.stats}
                     </div>
                   </div>
@@ -1379,11 +1541,11 @@ function App() {
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      <section id="testimonials" className="relative z-10 py-16 px-6 sm:px-8 lg:px-12">
+      {/* Testimonials Section with Enhanced Design */}
+      <section id="testimonials" className="relative z-10 py-20 px-6 sm:px-8 lg:px-12 snap-section">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-black mb-4 tracking-tight font-display">
+          <div className="text-center mb-20">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-black mb-6 tracking-tight font-display">
               <span className="inline-block text-white">Loved by Professionals</span>
             </h2>
             <p className="text-lg md:text-xl text-white/70 max-w-3xl mx-auto font-light leading-relaxed">
@@ -1391,35 +1553,45 @@ function App() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 perspective-card">
             {testimonials.map((testimonial, index) => (
               <div
                 key={index}
                 ref={el => testimonialCardRefs.current[index] = el}
                 data-idx={index}
-                className={`group relative p-6 backdrop-blur-2xl bg-gradient-to-br from-white/8 to-white/4 border border-white/15 rounded-2xl transition-all duration-500 cursor-pointer
-                  ${isMobile && visibleTestimonialCards.has(index) ? 'hover:scale-105 group-hover:scale-110 group-hover:rotate-6' : ''}
-                  ${!isMobile ? 'hover:scale-105' : ''}
+                className={`modern-card card-3d group relative p-8 backdrop-blur-2xl bg-gradient-to-br from-white/10 to-white/5 border border-white/15 rounded-3xl cursor-pointer transform-3d shadow-modern
+                  ${isMobile && visibleTestimonialCards.has(index) ? 'animate-reveal-up' : ''}
+                  ${!isMobile ? 'hover:shadow-modern-lg' : ''}
                 `}
+                style={{ transitionDelay: `${index * 100}ms` }}
                 onMouseEnter={() => handleSetHovered('card')}
                 onMouseLeave={() => handleSetHovered(null)}
+                onMouseMove={(e) => !isMobile && handleCardTilt(e, 300 + index)}
+                onMouseOut={(e) => !isMobile && handleCardTiltLeave(e)}
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-white/12 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-400"></div>
-                <div className="relative z-10">
+                <div className="absolute inset-0 bg-gradient-to-br from-white/15 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+                {/* Decorative quote mark */}
+                <div className="absolute top-6 right-6 text-white/10 text-6xl font-serif leading-none">
+                  "
+                </div>
+
+                <div className="relative z-10 card-3d-inner">
                   <div className="flex items-center space-x-1 mb-6">
                     {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
+                      <Star key={i} className="w-5 h-5 text-yellow-400 fill-current drop-shadow-lg animate-pulse" style={{ animationDelay: `${i * 100}ms` }} />
                     ))}
                   </div>
-                  <p className="text-white/90 text-base leading-relaxed mb-6 font-light">
+                  <p className="text-white/90 text-base leading-relaxed mb-8 font-light italic">
                     "{testimonial.content}"
                   </p>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-2xl border border-white/25 rounded-xl flex items-center justify-center">
-                      <span className="text-white font-bold text-sm">{testimonial.avatar}</span>
+                  <div className="flex items-center space-x-4">
+                    <div className="w-14 h-14 bg-gradient-to-br from-white/25 to-white/10 backdrop-blur-2xl border border-white/30 rounded-xl flex items-center justify-center shadow-modern-sm float-element">
+                      <span className="text-white font-bold text-base">{testimonial.avatar}</span>
                     </div>
                     <div>
-                      <div className="text-white font-bold text-base">{testimonial.name}</div>
+                      <div className="text-white font-bold text-lg">{testimonial.name}</div>
+                      <div className="text-white/60 text-sm">{testimonial.role}</div>
                     </div>
                   </div>
                 </div>
@@ -1429,11 +1601,29 @@ function App() {
         </div>
       </section>
 
-      {/* Download Section */}
-      <section ref={downloadRef} id="download" className="relative z-10 py-16 px-6 sm:px-8 lg:px-12">
+      {/* Download Section with Enhanced Design */}
+      <section ref={downloadRef} id="download" className="relative z-10 py-20 px-6 sm:px-8 lg:px-12 snap-section">
         <div className="max-w-5xl mx-auto">
-          <div className="relative backdrop-blur-2xl bg-gradient-to-br from-white/12 to-white/6 border border-white/15 rounded-2xl sm:rounded-3xl overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/8 via-purple-500/6 to-cyan-500/8"></div>
+          <div className="modern-card relative backdrop-blur-4xl bg-gradient-to-br from-white/15 to-white/8 border border-white/20 rounded-3xl sm:rounded-[2rem] overflow-hidden shadow-modern-lg">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-purple-500/8 to-cyan-500/10 animate-gradient-shift"></div>
+
+            {/* Floating particles in download section */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+              {[...Array(20)].map((_, i) => (
+                <div
+                  key={i}
+                  className="absolute rounded-full bg-white/10 animate-float-advanced"
+                  style={{
+                    width: `${Math.random() * 4 + 2}px`,
+                    height: `${Math.random() * 4 + 2}px`,
+                    left: `${Math.random() * 100}%`,
+                    top: `${Math.random() * 100}%`,
+                    animationDelay: `${Math.random() * 3}s`,
+                    animationDuration: `${6 + Math.random() * 4}s`
+                  }}
+                />
+              ))}
+            </div>
             
             <div className={`relative z-10 p-6 sm:p-8 md:p-12 text-center transition-all duration-1000 ${
               visibleSections.has('download') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
@@ -1508,43 +1698,47 @@ function App() {
                 </div>
               </div>
               
-              {/* Download Actions */}
-              <div className={`flex flex-col gap-3 sm:gap-4 justify-center mb-6 sm:mb-8 transition-all duration-700 delay-600 ${
+              {/* Download Actions with Magnetic Effect */}
+              <div className={`flex flex-col gap-4 sm:gap-5 justify-center mb-8 sm:mb-10 transition-all duration-700 delay-600 ${
                 visibleSections.has('download') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
               }`}>
                 <a
                   href={releaseData.downloadUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group relative px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-br from-blue-500/80 to-purple-500/80 backdrop-blur-2xl border border-blue-500/60 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg transition-all duration-400 hover:scale-105 hover:shadow-xl text-white w-full sm:w-auto"
+                  className="magnetic-button button-modern group relative px-8 sm:px-10 py-4 sm:py-5 bg-gradient-to-br from-blue-500/90 to-purple-500/90 backdrop-blur-2xl border border-blue-500/60 rounded-2xl font-bold text-base sm:text-lg transition-all duration-400 hover:scale-105 text-white w-full sm:w-auto shadow-modern-lg animate-glow-pulse"
                   onMouseEnter={() => handleSetHovered('button')}
                   onMouseLeave={() => handleSetHovered(null)}
+                  onMouseMove={(e) => handleMagneticMove(e, 'download-main')}
+                  onMouseOut={handleMagneticLeave}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 via-purple-400/15 to-cyan-400/20 rounded-xl sm:rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-400/30 via-purple-400/20 to-cyan-400/30 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   <div className="relative flex items-center justify-center space-x-3">
                     {releaseData.isLoading ? (
-                      <Loader className="w-5 h-5 sm:w-6 sm:h-6 animate-spin" />
+                      <Loader className="w-6 h-6 sm:w-7 sm:h-7 animate-spin" />
                     ) : (
-                      <Download className="w-5 h-5 sm:w-6 sm:h-6 group-hover:animate-bounce" />
+                      <Download className="w-6 h-6 sm:w-7 sm:h-7 group-hover:animate-bounce" />
                     )}
                     <span>{releaseData.isLoading ? "Fetching latest release..." : "Download for macOS"}</span>
-                    <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                    <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 group-hover:translate-x-1 transition-transform duration-300" />
                   </div>
                 </a>
-                
+
                 <a
                   href="https://github.com/Jnani-Smart/Clippy"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group relative px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-br from-white/15 to-white/8 backdrop-blur-2xl border border-white/25 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg transition-all duration-400 hover:scale-105 hover:shadow-xl text-white w-full sm:w-auto"
+                  className="magnetic-button button-modern group relative px-8 sm:px-10 py-4 sm:py-5 bg-gradient-to-br from-white/15 to-white/8 backdrop-blur-2xl border border-white/25 rounded-2xl font-bold text-base sm:text-lg transition-all duration-400 hover:scale-105 text-white w-full sm:w-auto shadow-modern"
                   onMouseEnter={() => handleSetHovered('button')}
                   onMouseLeave={() => handleSetHovered(null)}
+                  onMouseMove={(e) => handleMagneticMove(e, 'github-source')}
+                  onMouseOut={handleMagneticLeave}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-white/10 via-white/5 to-white/10 rounded-xl sm:rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/15 via-white/8 to-white/15 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   <div className="relative flex items-center justify-center space-x-3">
-                    <Github className="w-5 h-5 sm:w-6 sm:h-6" />
+                    <Github className="w-6 h-6 sm:w-7 sm:h-7" />
                     <span>View Source</span>
-                    <ExternalLink className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                    <ExternalLink className="w-5 h-5 sm:w-6 sm:h-6 group-hover:translate-x-1 transition-transform duration-300" />
                   </div>
                 </a>
               </div>
